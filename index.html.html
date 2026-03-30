@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Office Register Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #2a2f45;
+    --text: #e8eaf0;
+    --muted: #7b82a0;
+    --accent1: #6c8fff;   /* imprest - blue */
+    --accent2: #e05c5c;   /* dead stock - red */
+    --accent3: #3ecf8e;   /* consumable - green */
+    --accent4: #f0a94c;   /* salary - gold */
+    --gold: #f0a94c;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── Layout ── */
+  .shell { display: flex; height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px; min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 0;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 28px 22px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .sidebar-logo span { color: var(--gold); }
+  .sidebar-logo p { font-size: 0.7rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .nav-section { padding: 16px 12px 8px; }
+  .nav-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; padding: 0 10px 8px; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 11px 14px;
+    border: none; background: transparent;
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; font-weight: 500;
+    cursor: pointer; border-radius: var(--radius-sm);
+    transition: all 0.18s ease; text-align: left;
+    margin-bottom: 2px;
+  }
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { color: var(--text); }
+  .nav-btn .nav-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .nav-btn .nav-count {
+    margin-left: auto;
+    background: var(--surface2);
+    border-radius: 20px;
+    padding: 1px 8px;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+  .nav-btn.active .nav-count { color: var(--text); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── Main ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── Topbar ── */
+  .topbar {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .topbar-title { display: flex; align-items: center; gap: 14px; }
+  .topbar-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+  }
+  .topbar h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+  .topbar p { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  .add-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 22px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: all 0.18s ease;
+    letter-spacing: 0.02em;
+  }
+  .add-btn:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  .add-btn:active { transform: translateY(0); }
+
+  /* ── Stats strip ── */
+  .stats-strip {
+    display: flex; gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .stat-card {
+    flex: 1; padding: 14px 20px;
+    background: var(--surface);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+
+  /* ── Content ── */
+  .content { flex: 1; overflow-y: auto; padding: 24px 32px; }
+
+  /* ── Table ── */
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .table-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-header span { font-size: 0.78rem; color: var(--muted); }
+  .search-box {
+    padding: 7px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    outline: none; width: 200px;
+    transition: border-color 0.15s;
+  }
+  .search-box:focus { border-color: var(--accent1); }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 11px 16px;
+    text-align: left;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.09em;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td {
+    padding: 12px 16px;
+    font-size: 0.84rem;
+    vertical-align: middle;
+  }
+  .td-num { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; text-align: right; }
+  .td-fixed {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    text-align: right; color: var(--gold);
+  }
+  .td-total { font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; font-weight: 600; text-align: right; }
+  .td-date { font-family: 'JetBrains Mono', monospace; font-size: 0.79rem; color: var(--muted); }
+  .td-sno { color: var(--muted); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; width: 40px; }
+  .td-actions { width: 60px; text-align: right; }
+  .del-btn {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 1rem; padding: 4px 6px;
+    border-radius: 4px; transition: all 0.15s;
+  }
+  .del-btn:hover { color: #e05c5c; background: rgba(224,92,92,0.1); }
+
+  /* ── Grand Total bar ── */
+  .grand-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .grand-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .grand-value { font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 700; }
+
+  /* ── Empty state ── */
+  .empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+  .empty p { font-size: 0.88rem; }
+
+  /* ── Modal overlay ── */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+    z-index: 100; align-items: center; justify-content: center;
+  }
+  .overlay.open { display: flex; }
+
+  /* ── Modal ── */
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 540px; max-width: 96vw;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    animation: slideUp 0.22s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-head {
+    padding: 22px 26px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-head h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; }
+  .modal-head p { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+  .modal-close {
+    background: none; border: none; color: var(--muted); font-size: 1.4rem;
+    cursor: pointer; width: 32px; height: 32px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+  .modal-body { padding: 22px 26px; display: flex; flex-direction: column; gap: 16px; }
+
+  .field-row { display: flex; gap: 14px; }
+  .field-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .field-group label {
+    font-size: 0.72rem; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .field-group input, .field-group select {
+    padding: 10px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    outline: none; transition: border-color 0.15s;
+    width: 100%;
+  }
+  .field-group input:focus, .field-group select:focus { border-color: var(--accent1); }
+  .field-group input[readonly] {
+    color: var(--gold);
+    cursor: default;
+    background: rgba(240,169,76,0.07);
+    border-color: rgba(240,169,76,0.2);
+  }
+  .calc-preview {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .calc-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+  .calc-row span:first-child { color: var(--muted); }
+  .calc-row span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .calc-row.total { border-top: 1px solid var(--border); padding-top: 8px; font-size: 0.92rem; }
+  .calc-row.total span:last-child { font-size: 1rem; }
+
+  .modal-foot {
+    padding: 16px 26px 22px;
+    display: flex; gap: 10px; justify-content: flex-end;
+    border-top: 1px solid var(--border);
+  }
+  .btn-cancel {
+    padding: 9px 20px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.86rem; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-cancel:hover { background: var(--surface2); color: var(--text); }
+  .btn-save {
+    padding: 9px 24px; border-radius: var(--radius-sm);
+    border: none;
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 0.86rem; font-weight: 600; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-save:hover { filter: brightness(1.1); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 20px; font-size: 0.84rem;
+    color: var(--text); z-index: 200;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    transform: translateY(12px); opacity: 0;
+    transition: all 0.22s ease;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── Welcome dashboard ── */
+  .dashboard { padding: 32px; }
+  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+  .dash-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+  }
+  .dash-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .dash-card:hover { border-color: var(--muted); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .dash-card-icon { font-size: 2rem; margin-bottom: 12px; }
+  .dash-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px; }
+  .dash-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+  .dash-card .dash-count {
+    position: absolute; top: 16px; right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--muted);
+    background: var(--surface2); padding: 3px 10px; border-radius: 20px;
+  }
+  .dash-welcome h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; }
+  .dash-welcome h2 span { color: var(--gold); }
+  .dash-welcome p { color: var(--muted); font-size: 0.88rem; margin-top: 6px; }
+
+  /* accent colors per register */
+  .r0 { --rc: var(--accent1); }
+  .r1 { --rc: var(--accent2); }
+  .r2 { --rc: var(--accent3); }
+  .r3 { --rc: var(--accent4); }
+  .dash-card.r0::before { background: var(--accent1); }
+  .dash-card.r1::before { background: var(--accent2); }
+  .dash-card.r2::before { background: var(--accent3); }
+  .dash-card.r3::before { background: var(--accent4); }
+
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 0.7rem; font-weight: 600;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>Office<span>Suite</span></h1>
+      <p>Register Manager v1.0</p>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Registers</div>
+      <button class="nav-btn active" onclick="navigate(-1)" id="nav--1">
+        <span class="nav-dot" style="background:#f0a94c"></span>
+        Dashboard
+      </button>
+      <button class="nav-btn r0" onclick="navigate(0)" id="nav-0">
+        <span class="nav-dot" style="background:var(--accent1)"></span>
+        Imprest Bill
+        <span class="nav-count" id="cnt-0">0</span>
+      </button>
+      <button class="nav-btn r1" onclick="navigate(1)" id="nav-1">
+        <span class="nav-dot" style="background:var(--accent2)"></span>
+        Dead Stock
+        <span class="nav-count" id="cnt-1">0</span>
+      </button>
+      <button class="nav-btn r2" onclick="navigate(2)" id="nav-2">
+        <span class="nav-dot" style="background:var(--accent3)"></span>
+        Consumable
+        <span class="nav-count" id="cnt-2">0</span>
+      </button>
+      <button class="nav-btn r3" onclick="navigate(3)" id="nav-3">
+        <span class="nav-dot" style="background:var(--accent4)"></span>
+        Salary
+        <span class="nav-count" id="cnt-3">0</span>
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      All data saved in browser.<br/>
+      Open registers to add entries.
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main" id="main">
+    <!-- content injected by JS -->
+  </main>
+</div>
+
+<!-- ── Modal ── -->
+<div class="overlay" id="overlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="modal-title">Add Entry</h3>
+        <p id="modal-sub">Fill in the details below</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modal-save" onclick="saveEntry()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DATA LAYER  (localStorage)
+// ══════════════════════════════════════════════════
+const KEYS = ['imprest','deadstock','consumable','salary'];
+function load(k) { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } }
+function save(k,d) { localStorage.setItem(k, JSON.stringify(d)); }
+
+let data = {
+  imprest:    load('imprest'),
+  deadstock:  load('deadstock'),
+  consumable: load('consumable'),
+  salary:     load('salary'),
+};
+const KEYS_MAP = [data.imprest, data.deadstock, data.consumable, data.salary];
+const STORE_KEYS = ['imprest','deadstock','consumable','salary'];
+
+// ══════════════════════════════════════════════════
+//  REGISTER CONFIGS
+// ══════════════════════════════════════════════════
+const REGISTERS = [
+  {
+    name: 'Imprest Bill',
+    emoji: '🧾',
+    color: 'var(--accent1)',
+    bg: 'rgba(108,143,255,0.12)',
+    desc: 'Capital goods purchase with GST tracking',
+    tag: 'Capital Expense',
+    fields: [
+      { key:'itemName',   label:'Item Name',      type:'text',   placeholder:'e.g. Office Chair' },
+      { key:'memoNo',     label:'Cash Memo No.',  type:'text',   placeholder:'e.g. CM/2024/001' },
+      { key:'price',      label:'Item Price (₹)', type:'number', placeholder:'0.00' },
+      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
+      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    ],
+    calcTotal: r => {
+      const p = +r.price||0, s = p*(+r.sgst||0)/100, c = p*(+r.cgst||0)/100;
+      return { sgstAmt: s, cgstAmt: c, total: p+s+c };
+    },
+    columns: ['S.No','Item Name','Cash Memo No.','Price (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
+    rowFn: (r,i) => {
+      const t = REGISTERS[0].calcTotal(r);
+      return `<td class="td-sno">${i+1}</td>
+              <td>${r.itemName||'—'}</td>
+              <td>${r.memoNo||'—'}</td>
+              <td class="td-num">${fmt(r.price)}</td>
+              <td class="td-num">${r.sgst||0}%</td>
+              <td class="td-num">${fmt(t.sgstAmt)}</td>
+              <td class="td-num">${r.cgst||0}%</td>
+              <td class="td-num">${fmt(t.cgstAmt)}</td>
+              <td class="td-total" style="color:var(--accent1)">${fmt(t.total)}</td>`;
+    },
+    totalFn: rows => rows.reduce((s,r) => s + (REGISTERS[0].calcTotal(r).total), 0),
+    statsLabels: ['Entries','Total Price','Total Tax','Grand Total'],
+    statsFn: rows => {
+      const tot = rows.reduce((s,r)=>{const t=REGISTERS[0].calcTotal(r); return {p:s.p+(+r.price||0),tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{p:0,tax:0,gt:0});
+      return [rows.length, fmtR(tot.p), fmtR(tot.tax), fmtR(tot.gt)];
+    }
+  },
+  {
+    name: 'Dead Stock Register',
+    emoji: '📋',
+    color: 'var(--accent2)',
+    bg: 'rgba(224,92,92,0.12)',
+    desc: 'Capital goods bill & receipt tracking',
+    tag: 'Capital Goods',
+    fields: [
+      { key:'itemName',   label:'Item Name',      type:'text',   placeholder:'e.g. Printer' },
+      { key:'receiptNo',  label:'Receipt No.',    type:'text',   placeholder:'e.g. RCP/001' },
+      { key:'date',       label:'Date',           type:'date',   placeholder:'' },
+      { key:'price',      label:'Item Price (₹)', type:'number', placeholder:'0.00' },
+      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
+      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    ],
+    calcTotal: r => {
+      const p = +r.price||0, s = p*(+r.sgst||0)/100, c = p*(+r.cgst||0)/100;
+      return { sgstAmt: s, cgstAmt: c, total: p+s+c };
+    },
+    columns: ['S.No','Item Name','Receipt No.','Date','Price (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
+    rowFn: (r,i) => {
+      const t = REGISTERS[1].calcTotal(r);
+      return `<td class="td-sno">${i+1}</td>
+              <td>${r.itemName||'—'}</td>
+              <td>${r.receiptNo||'—'}</td>
+              <td class="td-date">${fmtDate(r.date)}</td>
+              <td class="td-num">${fmt(r.price)}</td>
+              <td class="td-num">${r.sgst||0}%</td>
+              <td class="td-num">${fmt(t.sgstAmt)}</td>
+              <td class="td-num">${r.cgst||0}%</td>
+              <td class="td-num">${fmt(t.cgstAmt)}</td>
+              <td class="td-total" style="color:var(--accent2)">${fmt(t.total)}</td>`;
+    },
+    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[1].calcTotal(r).total, 0),
+    statsLabels: ['Entries','Total Price','Total Tax','Grand Total'],
+    statsFn: rows => {
+      const tot = rows.reduce((s,r)=>{const t=REGISTERS[1].calcTotal(r); return {p:s.p+(+r.price||0),tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{p:0,tax:0,gt:0});
+      return [rows.length, fmtR(tot.p), fmtR(tot.tax), fmtR(tot.gt)];
+    }
+  },
+  {
+    name: 'Consumable Register',
+    emoji: '🗂️',
+    color: 'var(--accent3)',
+    bg: 'rgba(62,207,142,0.12)',
+    desc: 'Day-to-day supplies & consumables',
+    tag: 'Consumables',
+    fields: [
+      { key:'date',       label:'Date',           type:'date',   placeholder:'' },
+      { key:'particular', label:'Particular',     type:'text',   placeholder:'e.g. A4 Paper Ream' },
+      { key:'qty',        label:'Quantity',       type:'number', placeholder:'1' },
+      { key:'rate',       label:'Rate (₹)',       type:'number', placeholder:'0.00' },
+      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
+      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    ],
+    calcTotal: r => {
+      const base = (+r.qty||0)*(+r.rate||0);
+      const s = base*(+r.sgst||0)/100, c = base*(+r.cgst||0)/100;
+      return { base, sgstAmt: s, cgstAmt: c, total: base+s+c };
+    },
+    columns: ['S.No','Date','Particular','Qty','Rate (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
+    rowFn: (r,i) => {
+      const t = REGISTERS[2].calcTotal(r);
+      return `<td class="td-sno">${i+1}</td>
+              <td class="td-date">${fmtDate(r.date)}</td>
+              <td>${r.particular||'—'}</td>
+              <td class="td-num">${r.qty||0}</td>
+              <td class="td-num">${fmt(r.rate)}</td>
+              <td class="td-num">${r.sgst||0}%</td>
+              <td class="td-num">${fmt(t.sgstAmt)}</td>
+              <td class="td-num">${r.cgst||0}%</td>
+              <td class="td-num">${fmt(t.cgstAmt)}</td>
+              <td class="td-total" style="color:var(--accent3)">${fmt(t.total)}</td>`;
+    },
+    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[2].calcTotal(r).total, 0),
+    statsLabels: ['Entries','Base Amount','Total Tax','Grand Total'],
+    statsFn: rows => {
+      const tot = rows.reduce((s,r)=>{const t=REGISTERS[2].calcTotal(r); return {b:s.b+t.base,tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{b:0,tax:0,gt:0});
+      return [rows.length, fmtR(tot.b), fmtR(tot.tax), fmtR(tot.gt)];
+    }
+  },
+  {
+    name: 'Salary Register',
+    emoji: '💼',
+    color: 'var(--accent4)',
+    bg: 'rgba(240,169,76,0.12)',
+    desc: 'Monthly salary, TDS & deduction record',
+    tag: 'Payroll',
+    fields: [
+      { key:'date',       label:'Date',                type:'date',   placeholder:'' },
+      { key:'gross',      label:'Gross Salary (₹)',   type:'number', placeholder:'0.00' },
+      { key:'tds',        label:'TDS Deduction (₹)',  type:'number', placeholder:'0.00' },
+      { key:'stateTax',   label:'State Tax (₹)',      type:'number', placeholder:'259', readonly:true, defaultVal:259 },
+      { key:'inHand',     label:'In Hand (₹)',        type:'number', placeholder:'0.00' },
+    ],
+    calcTotal: r => {
+      const g=+r.gross||0, tds=+r.tds||0, st=259, net=g-tds-st;
+      return { net, stateTax: st };
+    },
+    columns: ['S.No','Date','Gross Salary','TDS Deduction','State Tax','In Hand','Net Payable'],
+    rowFn: (r,i) => {
+      const t = REGISTERS[3].calcTotal(r);
+      return `<td class="td-sno">${i+1}</td>
+              <td class="td-date">${fmtDate(r.date)}</td>
+              <td class="td-num">${fmt(r.gross)}</td>
+              <td class="td-num" style="color:#e05c5c">${fmt(r.tds)}</td>
+              <td class="td-fixed">₹259.00</td>
+              <td class="td-num">${fmt(r.inHand)}</td>
+              <td class="td-total" style="color:var(--accent4)">${fmt(t.net)}</td>`;
+    },
+    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[3].calcTotal(r).net, 0),
+    statsLabels: ['Months','Total Gross','Total Deductions','Net Payable'],
+    statsFn: rows => {
+      const tot = rows.reduce((s,r)=>{const t=REGISTERS[3].calcTotal(r); return {g:s.g+(+r.gross||0),d:s.d+(+r.tds||0)+259,n:s.n+t.net};},{g:0,d:0,n:0});
+      return [rows.length, fmtR(tot.g), fmtR(tot.d), fmtR(tot.n)];
+    }
+  }
+];
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function fmt(v) { return '₹' + (+v||0).toLocaleString('en-IN', {minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtR(v) { return '₹' + (+v||0).toLocaleString('en-IN', {minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(d) {
+  if(!d) return '—';
+  const [y,m,day] = d.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${day}-${months[+m-1]}-${y}`;
+}
+function updateCounts() {
+  KEYS_MAP.forEach((d,i) => { document.getElementById('cnt-'+i).textContent = d.length; });
+}
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+let currentReg = -1;
+function navigate(idx) {
+  currentReg = idx;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-'+idx).classList.add('active');
+  if(idx === -1) renderDashboard();
+  else renderRegister(idx);
+}
+
+// ══════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════
+function renderDashboard() {
+  const main = document.getElementById('main');
+  const totalAll = KEYS_MAP.reduce((s,d,i)=>s+REGISTERS[i].totalFn(d),0);
+  main.innerHTML = `
+    <div class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-icon" style="background:rgba(240,169,76,0.15);font-size:1.3rem">🏢</div>
+        <div>
+          <h2>Office Register Manager</h2>
+          <p>All your registers in one place</p>
+        </div>
+      </div>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-card"><div class="stat-label">Total Registers</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Total Entries</div><div class="stat-value">${KEYS_MAP.reduce((s,d)=>s+d.length,0)}</div></div>
+      <div class="stat-card"><div class="stat-label">Combined Total</div><div class="stat-value" style="color:var(--gold)">${fmtR(totalAll)}</div></div>
+    </div>
+    <div class="dashboard">
+      <div class="dash-welcome">
+        <h2>Welcome to <span>OfficeSuite</span></h2>
+        <p>Click any register below to view entries or add new ones</p>
+      </div>
+      <div class="dash-grid">
+        ${REGISTERS.map((r,i) => `
+          <div class="dash-card r${i}" onclick="navigate(${i})">
+            <div class="dash-count">${KEYS_MAP[i].length} entries</div>
+            <div class="dash-card-icon">${r.emoji}</div>
+            <span class="tag" style="background:${r.bg};color:${r.color}">${r.tag}</span>
+            <h3>${r.name}</h3>
+            <p>${r.desc}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════
+//  REGISTER VIEW
+// ══════════════════════════════════════════════════
+let searchTerm = '';
+function renderRegister(idx) {
+  const reg = REGISTERS[idx];
+  const rows = KEYS_MAP[idx];
+  const stats = reg.statsFn(rows);
+  const main = document.getElementById('main');
+  const grandTotal = reg.totalFn(rows);
+
+  const filtered = rows.filter(r =>
+    Object.values(r).some(v => String(v).toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  main.innerHTML = `
+    <div class="topbar">
+      <div class="topbar-title">
+        <div class="topbar-icon" style="background:${reg.bg};font-size:1.2rem">${reg.emoji}</div>
+        <div>
+          <h2 style="color:${reg.color}">${reg.name}</h2>
+          <p>${reg.desc}</p>
+        </div>
+      </div>
+      <button class="add-btn" style="background:${reg.color}" onclick="openModal(${idx})">
+        + Add Entry
+      </button>
+    </div>
+    <div class="stats-strip">
+      ${stats.map((v,i)=>`<div class="stat-card">
+        <div class="stat-label">${reg.statsLabels[i]}</div>
+        <div class="stat-value" style="${i===3?'color:'+reg.color:''}">${v}</div>
+      </div>`).join('')}
+    </div>
+    <div class="content">
+      <div class="table-wrap">
+        <div class="table-header">
+          <span>${filtered.length} record${filtered.length!==1?'s':''}</span>
+          <input class="search-box" type="text" placeholder="🔍  Search entries…"
+            value="${searchTerm}" oninput="onSearch(this.value,${idx})"/>
+        </div>
+        ${filtered.length === 0 ? `
+          <div class="empty">
+            <div class="empty-icon">${reg.emoji}</div>
+            <p>${searchTerm ? 'No entries match your search.' : 'No entries yet. Click <b>+ Add Entry</b> to get started.'}</p>
+          </div>` : `
+        <table>
+          <thead><tr>${reg.columns.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead>
+          <tbody>
+            ${filtered.map((r,i) => `
+              <tr>
+                ${reg.rowFn(r, rows.indexOf(r))}
+                <td class="td-actions">
+                  <button class="del-btn" onclick="deleteEntry(${idx},${rows.indexOf(r)})" title="Delete">🗑</button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+        <div class="grand-bar">
+          <span class="grand-label">Grand Total</span>
+          <span class="grand-value" style="color:${reg.color}">${fmtR(grandTotal)}</span>
+        </div>`}
+      </div>
+    </div>`;
+}
+
+function onSearch(val, idx) {
+  searchTerm = val;
+  renderRegister(idx);
+}
+
+// ══════════════════════════════════════════════════
+//  DELETE
+// ══════════════════════════════════════════════════
+function deleteEntry(regIdx, rowIdx) {
+  if(!confirm('Delete this entry?')) return;
+  KEYS_MAP[regIdx].splice(rowIdx,1);
+  save(STORE_KEYS[regIdx], KEYS_MAP[regIdx]);
+  updateCounts();
+  renderRegister(regIdx);
+  toast('Entry deleted');
+}
+
+// ══════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════
+let activeRegIdx = -1;
+function openModal(idx) {
+  activeRegIdx = idx;
+  const reg = REGISTERS[idx];
+  document.getElementById('modal-title').textContent = `Add Entry — ${reg.name}`;
+  document.getElementById('modal-sub').textContent = reg.desc;
+  document.getElementById('modal-save').style.background = reg.color;
+  document.getElementById('overlay').classList.add('open');
+  renderModalFields(idx);
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  activeRegIdx = -1;
+}
+function closeModalOutside(e) {
+  if(e.target === document.getElementById('overlay')) closeModal();
+}
+
+function renderModalFields(idx) {
+  const reg = REGISTERS[idx];
+  const body = document.getElementById('modal-body');
+
+  // build field pairs
+  const fields = reg.fields;
+  let html = '';
+  for(let i=0; i<fields.length; i+=2) {
+    const f1 = fields[i], f2 = fields[i+1];
+    html += `<div class="field-row">`;
+    html += fieldHTML(f1);
+    if(f2) html += fieldHTML(f2);
+    html += `</div>`;
+  }
+
+  // calc preview
+  html += `<div class="calc-preview" id="calc-preview">${calcPreviewHTML(idx, {})}</div>`;
+  body.innerHTML = html;
+
+  // attach listeners
+  fields.forEach(f => {
+    const el = document.getElementById('f-'+f.key);
+    if(el && !f.readonly) el.addEventListener('input', () => updateCalcPreview(idx));
+  });
+
+  // set defaults
+  fields.forEach(f => {
+    if(f.defaultVal !== undefined) {
+      const el = document.getElementById('f-'+f.key);
+      if(el) el.value = f.defaultVal;
+    }
+    if(f.type === 'date') {
+      const el = document.getElementById('f-'+f.key);
+      if(el) el.value = new Date().toISOString().split('T')[0];
+    }
+  });
+  updateCalcPreview(idx);
+}
+
+function fieldHTML(f) {
+  return `<div class="field-group">
+    <label>${f.label}</label>
+    <input id="f-${f.key}" type="${f.type}" placeholder="${f.placeholder||''}"
+      ${f.readonly?'readonly':''} step="${f.type==='number'?'0.01':''}"
+      min="${f.type==='number'?'0':''}"/>
+  </div>`;
+}
+
+function getFormVals(idx) {
+  const vals = {};
+  REGISTERS[idx].fields.forEach(f => {
+    const el = document.getElementById('f-'+f.key);
+    vals[f.key] = el ? el.value : '';
+  });
+  return vals;
+}
+
+function updateCalcPreview(idx) {
+  const vals = getFormVals(idx);
+  document.getElementById('calc-preview').innerHTML = calcPreviewHTML(idx, vals);
+}
+
+function calcPreviewHTML(idx, vals) {
+  const reg = REGISTERS[idx];
+  if(idx === 0) {
+    const p=+vals.price||0, s=p*(+vals.sgst||0)/100, c=p*(+vals.cgst||0)/100;
+    return `<div class="calc-row"><span>Item Price</span><span>${fmt(p)}</span></div>
+            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
+            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
+            <div class="calc-row total"><span>Total Amount</span><span style="color:var(--accent1)">${fmt(p+s+c)}</span></div>`;
+  }
+  if(idx === 1) {
+    const p=+vals.price||0, s=p*(+vals.sgst||0)/100, c=p*(+vals.cgst||0)/100;
+    return `<div class="calc-row"><span>Item Price</span><span>${fmt(p)}</span></div>
+            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
+            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
+            <div class="calc-row total"><span>Total Amount</span><span style="color:var(--accent2)">${fmt(p+s+c)}</span></div>`;
+  }
+  if(idx === 2) {
+    const base=(+vals.qty||0)*(+vals.rate||0), s=base*(+vals.sgst||0)/100, c=base*(+vals.cgst||0)/100;
+    return `<div class="calc-row"><span>Qty × Rate</span><span>${fmt(base)}</span></div>
+            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
+            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
+            <div class="calc-row total"><span>Grand Total</span><span style="color:var(--accent3)">${fmt(base+s+c)}</span></div>`;
+  }
+  if(idx === 3) {
+    const g=+vals.gross||0, tds=+vals.tds||0, st=259, net=g-tds-st;
+    return `<div class="calc-row"><span>Gross Salary</span><span>${fmt(g)}</span></div>
+            <div class="calc-row"><span>TDS Deduction</span><span style="color:#e05c5c">− ${fmt(tds)}</span></div>
+            <div class="calc-row"><span>State Tax (Fixed)</span><span style="color:var(--gold)">− ₹259.00</span></div>
+            <div class="calc-row total"><span>Net Payable</span><span style="color:var(--accent4)">${fmt(net)}</span></div>`;
+  }
+  return '';
+}
+
+// ══════════════════════════════════════════════════
+//  SAVE ENTRY
+// ══════════════════════════════════════════════════
+function saveEntry() {
+  const idx = activeRegIdx;
+  if(idx < 0) return;
+  const vals = getFormVals(idx);
+
+  // basic validation
+  const reg = REGISTERS[idx];
+  const required = reg.fields.filter(f=>!f.readonly && f.key!=='date');
+  const missing = required.filter(f => !vals[f.key] || vals[f.key]==='');
+  if(missing.length) { toast('⚠️ Please fill all required fields'); return; }
+
+  // fix state tax
+  if(idx===3) vals.stateTax = 259;
+
+  KEYS_MAP[idx].push(vals);
+  save(STORE_KEYS[idx], KEYS_MAP[idx]);
+  updateCounts();
+  closeModal();
+  renderRegister(idx);
+  toast('✅ Entry saved successfully!');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2400);
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+updateCounts();
+renderDashboard();
+</script>
+</body>
+</html>
