@@ -2,432 +2,313 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Office Register Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Office Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #0f1117;
-    --surface: #181c27;
-    --surface2: #1e2333;
-    --border: #2a2f45;
-    --text: #e8eaf0;
-    --muted: #7b82a0;
-    --accent1: #6c8fff;   /* imprest - blue */
-    --accent2: #e05c5c;   /* dead stock - red */
-    --accent3: #3ecf8e;   /* consumable - green */
-    --accent4: #f0a94c;   /* salary - gold */
-    --gold: #f0a94c;
-    --radius: 14px;
-    --radius-sm: 8px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2333;--border:#2a2f45;
+  --text:#e8eaf0;--muted:#7b82a0;
+  --a1:#6c8fff;--a2:#e05c5c;--a3:#3ecf8e;--a4:#f0a94c;--gold:#f0a94c;
+  --r:14px;--rs:10px;--nav:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
+  overflow-x:hidden;min-height:100vh;padding-bottom:calc(var(--nav)+8px);
+  -webkit-tap-highlight-color:transparent;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-  /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* TOP */
+.top-hdr{position:sticky;top:0;z-index:50;background:var(--surface);
+  border-bottom:1px solid var(--border);padding:11px 14px;
+  display:flex;align-items:center;justify-content:space-between;}
+.app-logo{font-size:1.12rem;font-weight:900;letter-spacing:-0.02em;}
+.app-logo span{color:var(--gold);}
+.total-pill{background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 11px;font-size:0.7rem;
+  font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;}
 
-  /* ── Layout ── */
-  .shell { display: flex; height: 100vh; }
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);
+  background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;background:none;border:none;cursor:pointer;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-size:0.56rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.05em;transition:color 0.15s;
+  padding:4px 2px;position:relative;}
+.nb.active{color:var(--text);}
+.nb .ni{font-size:1.2rem;line-height:1;}
+.nb .ndot{position:absolute;top:6px;right:calc(50% - 12px);width:7px;height:7px;border-radius:50%;display:none;}
+.nb.active .ndot{display:block;}
+.nb .nbadge{position:absolute;top:4px;right:calc(50% - 16px);background:var(--a2);
+  color:#fff;border-radius:10px;padding:1px 4px;font-size:0.5rem;font-weight:900;
+  min-width:14px;text-align:center;display:none;}
 
-  /* ── Sidebar ── */
-  .sidebar {
-    width: 260px; min-width: 260px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    padding: 0;
-    overflow-y: auto;
-  }
-  .sidebar-logo {
-    padding: 28px 22px 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.35rem;
-    font-weight: 900;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .sidebar-logo span { color: var(--gold); }
-  .sidebar-logo p { font-size: 0.7rem; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+/* PAGES */
+.page{display:none;}.page.active{display:block;}
 
-  .nav-section { padding: 16px 12px 8px; }
-  .nav-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; padding: 0 10px 8px; }
-  .nav-btn {
-    display: flex; align-items: center; gap: 12px;
-    width: 100%; padding: 11px 14px;
-    border: none; background: transparent;
-    color: var(--muted); font-family: 'DM Sans', sans-serif;
-    font-size: 0.88rem; font-weight: 500;
-    cursor: pointer; border-radius: var(--radius-sm);
-    transition: all 0.18s ease; text-align: left;
-    margin-bottom: 2px;
-  }
-  .nav-btn:hover { background: var(--surface2); color: var(--text); }
-  .nav-btn.active { color: var(--text); }
-  .nav-btn .nav-dot {
-    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-  }
-  .nav-btn .nav-count {
-    margin-left: auto;
-    background: var(--surface2);
-    border-radius: 20px;
-    padding: 1px 8px;
-    font-size: 0.72rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-  }
-  .nav-btn.active .nav-count { color: var(--text); }
+/* DASHBOARD */
+.dh{padding:18px 14px 8px;}
+.dh h2{font-size:1.45rem;font-weight:900;line-height:1.2;}
+.dh h2 span{color:var(--gold);}
+.dh p{color:var(--muted);font-size:0.78rem;margin-top:3px;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:10px 14px 14px;}
+.sbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;}
+.sbox .sl{font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.sbox .sv{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;}
+.rcards{padding:0 14px 14px;display:flex;flex-direction:column;gap:9px;}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 12px;display:flex;align-items:center;gap:11px;cursor:pointer;
+  transition:transform 0.1s;position:relative;overflow:hidden;}
+.rcard:active{transform:scale(0.98);}
+.rcard-bar{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;}
+.rcard-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.rcard-info{flex:1;min-width:0;}
+.rcard-name{font-size:0.9rem;font-weight:800;margin-bottom:2px;}
+.rcard-desc{font-size:0.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rcard-right{text-align:right;flex-shrink:0;}
+.rcard-count{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;}
+.rcard-lbl{font-size:0.56rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.rcard-arr{color:var(--muted);font-size:1.2rem;margin-left:3px;}
 
-  .sidebar-footer {
-    margin-top: auto;
-    padding: 16px 22px;
-    border-top: 1px solid var(--border);
-    font-size: 0.72rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+/* REGISTER */
+.rtop{display:flex;align-items:center;gap:9px;padding:11px 14px;
+  border-bottom:1px solid var(--border);background:var(--surface);
+  position:sticky;top:47px;z-index:40;}
+.back-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;flex-shrink:0;}
+.rtop-info{flex:1;min-width:0;}
+.rtop-info h3{font-size:0.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rtop-info p{font-size:0.63rem;color:var(--muted);}
+.add-btn{display:flex;align-items:center;gap:4px;padding:7px 13px;border:none;
+  border-radius:20px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:800;
+  cursor:pointer;color:#fff;flex-shrink:0;transition:transform 0.1s;}
+.add-btn:active{transform:scale(0.94);}
 
-  /* ── Main ── */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+/* STATS */
+.rstats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.rsc{background:var(--surface2);padding:8px 12px;}
+.rsc .rsl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;}
+.rsc .rsv{font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;}
 
-  /* ── Topbar ── */
-  .topbar {
-    padding: 20px 32px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .topbar-title { display: flex; align-items: center; gap: 14px; }
-  .topbar-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-  }
-  .topbar h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
-  .topbar p { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+/* FILTER BAR */
+.fbar{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);align-items:center;overflow-x:auto;}
+.fbar::-webkit-scrollbar{display:none;}
+.finput{flex:1;min-width:120px;padding:8px 10px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:0.82rem;outline:none;-webkit-appearance:none;}
+.finput:focus{border-color:var(--a1);}
+.fchip{padding:7px 11px;border:1px solid var(--border);border-radius:20px;
+  background:var(--surface2);color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
+.fchip.active{border-color:currentColor;}
+.fclr{padding:7px 11px;border:1px solid var(--border);border-radius:20px;
+  background:transparent;color:var(--a2);font-family:'Nunito',sans-serif;
+  font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 
-  .add-btn {
-    display: flex; align-items: center; gap: 8px;
-    padding: 10px 22px;
-    border: none; border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600;
-    cursor: pointer; transition: all 0.18s ease;
-    letter-spacing: 0.02em;
-  }
-  .add-btn:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-  .add-btn:active { transform: translateY(0); }
+/* ENTRIES */
+.elist{padding:0 14px 12px;display:flex;flex-direction:column;gap:9px;}
+.ecard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:13px;position:relative;transition:border-color 0.15s;}
+.ecard.sel{border-color:var(--a2);}
+.ecard-date{font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;
+  margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.ecard-date::before{content:'📅';font-size:0.7rem;}
+.ectop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.ename{font-size:0.88rem;font-weight:800;flex:1;min-width:0;word-break:break-word;}
+.etotal{font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:700;flex-shrink:0;}
+.emeta{display:flex;flex-wrap:wrap;gap:5px;}
+.mc{background:var(--surface2);border-radius:6px;padding:3px 7px;font-size:0.64rem;color:var(--muted);}
+.mc span{color:var(--text);font-weight:700;}
+.edel-btn{position:absolute;top:10px;right:10px;background:rgba(224,92,92,0.15);
+  border:1px solid rgba(224,92,92,0.3);border-radius:6px;color:var(--a2);
+  font-size:0.72rem;font-weight:800;cursor:pointer;padding:3px 8px;display:none;}
+.ecard.sel .edel-btn{display:block;}
+.hint{text-align:center;color:var(--muted);font-size:0.65rem;padding:5px 14px;margin-bottom:3px;}
 
-  /* ── Stats strip ── */
-  .stats-strip {
-    display: flex; gap: 1px;
-    background: var(--border);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .stat-card {
-    flex: 1; padding: 14px 20px;
-    background: var(--surface);
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
-  .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+/* EXPORT BTN */
+.export-row{padding:0 14px 10px;display:flex;gap:8px;}
+.exp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px;border:1px solid var(--border);border-radius:var(--rs);
+  background:var(--surface);color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:0.78rem;font-weight:800;cursor:pointer;transition:all 0.15s;}
+.exp-btn:hover{border-color:var(--a3);color:var(--a3);}
+.exp-btn:active{transform:scale(0.97);}
 
-  /* ── Content ── */
-  .content { flex: 1; overflow-y: auto; padding: 24px 32px; }
+/* GRAND TOTAL */
+.gbar{margin:0 14px 14px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:13px 14px;display:flex;justify-content:space-between;align-items:center;}
+.glabel{font-size:0.76rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;}
+.gval{font-family:'JetBrains Mono',monospace;font-size:1.08rem;font-weight:700;}
 
-  /* ── Table ── */
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .table-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .table-header span { font-size: 0.78rem; color: var(--muted); }
-  .search-box {
-    padding: 7px 14px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-    outline: none; width: 200px;
-    transition: border-color 0.15s;
-  }
-  .search-box:focus { border-color: var(--accent1); }
-  table { width: 100%; border-collapse: collapse; }
-  thead th {
-    padding: 11px 16px;
-    text-align: left;
-    font-size: 0.7rem; font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.09em;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface2); }
-  tbody td {
-    padding: 12px 16px;
-    font-size: 0.84rem;
-    vertical-align: middle;
-  }
-  .td-num { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; text-align: right; }
-  .td-fixed {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
-    text-align: right; color: var(--gold);
-  }
-  .td-total { font-family: 'JetBrains Mono', monospace; font-size: 0.84rem; font-weight: 600; text-align: right; }
-  .td-date { font-family: 'JetBrains Mono', monospace; font-size: 0.79rem; color: var(--muted); }
-  .td-sno { color: var(--muted); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; width: 40px; }
-  .td-actions { width: 60px; text-align: right; }
-  .del-btn {
-    background: none; border: none; color: var(--muted);
-    cursor: pointer; font-size: 1rem; padding: 4px 6px;
-    border-radius: 4px; transition: all 0.15s;
-  }
-  .del-btn:hover { color: #e05c5c; background: rgba(224,92,92,0.1); }
+/* EMPTY */
+.empty{padding:48px 20px;text-align:center;}
+.empty .ei{font-size:2.8rem;opacity:0.25;margin-bottom:10px;}
+.empty p{color:var(--muted);font-size:0.82rem;line-height:1.6;}
 
-  /* ── Grand Total bar ── */
-  .grand-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 20px;
-    background: var(--surface2);
-    border-top: 1px solid var(--border);
-  }
-  .grand-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .grand-value { font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 700; }
+/* MODAL */
+.ovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(8px);z-index:200;align-items:flex-end;justify-content:center;}
+.ovlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;
+  width:100%;max-width:600px;max-height:92vh;overflow-y:auto;
+  animation:mup 0.25s cubic-bezier(0.34,1.4,0.64,1);}
+@keyframes mup{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.mhandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:11px auto 0;}
+.mhead{padding:13px 17px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mhead h3{font-size:0.98rem;font-weight:800;}
+.mhead p{font-size:0.66rem;color:var(--muted);margin-top:2px;}
+.mcls{background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+  border-radius:8px;width:30px;height:30px;font-size:0.95rem;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;}
+.mbody{padding:13px 17px;display:flex;flex-direction:column;gap:11px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:0.66rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.fg input{padding:11px 11px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-family:'Nunito',sans-serif;font-size:0.92rem;
+  outline:none;width:100%;-webkit-appearance:none;}
+.fg input:focus{border-color:var(--a1);}
+.fg input[readonly]{color:var(--gold);background:rgba(240,169,76,0.08);border-color:rgba(240,169,76,0.25);}
+.cprev{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:11px;}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:0.8rem;}
+.crow span:first-child{color:var(--muted);}
+.crow span:last-child{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.78rem;}
+.crow.tot{border-top:1px solid var(--border);margin-top:5px;padding-top:8px;}
+.crow.tot span{font-size:0.92rem!important;}
+.mfoot{padding:11px 17px 14px;display:flex;gap:9px;border-top:1px solid var(--border);}
+.bcnl{flex:1;padding:11px;border:1px solid var(--border);border-radius:var(--rs);
+  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:700;cursor:pointer;}
+.bsave{flex:2;padding:11px;border:none;border-radius:var(--rs);color:#fff;
+  font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:800;cursor:pointer;transition:transform 0.1s;}
+.bsave:active{transform:scale(0.97);}
 
-  /* ── Empty state ── */
-  .empty {
-    padding: 60px 20px;
-    text-align: center;
-    color: var(--muted);
-  }
-  .empty .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
-  .empty p { font-size: 0.88rem; }
+/* DEL DIALOG */
+.dovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  z-index:250;align-items:center;justify-content:center;padding:20px;}
+.dovlay.open{display:flex;}
+.dbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 17px;width:100%;max-width:300px;text-align:center;}
+.dbox h4{font-size:0.96rem;font-weight:800;margin-bottom:6px;}
+.dbox p{color:var(--muted);font-size:0.76rem;margin-bottom:17px;line-height:1.5;}
+.dbtns{display:flex;gap:9px;}
+.dbtns button{flex:1;padding:11px;border-radius:var(--rs);font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;cursor:pointer;border:none;}
+.dno{background:var(--surface2);color:var(--text);border:1px solid var(--border)!important;}
+.dyes{background:var(--a2);color:#fff;}
 
-  /* ── Modal overlay ── */
-  .overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
-    z-index: 100; align-items: center; justify-content: center;
-  }
-  .overlay.open { display: flex; }
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav)+12px);left:50%;
+  transform:translateX(-50%) translateY(16px);background:var(--surface2);
+  border:1px solid var(--border);border-radius:20px;padding:8px 18px;
+  font-size:0.8rem;font-weight:700;color:var(--text);z-index:300;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);opacity:0;transition:all 0.2s ease;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* ── Modal ── */
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    width: 540px; max-width: 96vw;
-    max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
-    animation: slideUp 0.22s ease;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .modal-head {
-    padding: 22px 26px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .modal-head h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; }
-  .modal-head p { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
-  .modal-close {
-    background: none; border: none; color: var(--muted); font-size: 1.4rem;
-    cursor: pointer; width: 32px; height: 32px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-  }
-  .modal-close:hover { background: var(--surface2); color: var(--text); }
-
-  .modal-body { padding: 22px 26px; display: flex; flex-direction: column; gap: 16px; }
-
-  .field-row { display: flex; gap: 14px; }
-  .field-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-  .field-group label {
-    font-size: 0.72rem; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.08em;
-  }
-  .field-group input, .field-group select {
-    padding: 10px 14px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text);
-    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
-    outline: none; transition: border-color 0.15s;
-    width: 100%;
-  }
-  .field-group input:focus, .field-group select:focus { border-color: var(--accent1); }
-  .field-group input[readonly] {
-    color: var(--gold);
-    cursor: default;
-    background: rgba(240,169,76,0.07);
-    border-color: rgba(240,169,76,0.2);
-  }
-  .calc-preview {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .calc-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
-  .calc-row span:first-child { color: var(--muted); }
-  .calc-row span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-  .calc-row.total { border-top: 1px solid var(--border); padding-top: 8px; font-size: 0.92rem; }
-  .calc-row.total span:last-child { font-size: 1rem; }
-
-  .modal-foot {
-    padding: 16px 26px 22px;
-    display: flex; gap: 10px; justify-content: flex-end;
-    border-top: 1px solid var(--border);
-  }
-  .btn-cancel {
-    padding: 9px 20px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); font-family: 'DM Sans', sans-serif;
-    font-size: 0.86rem; cursor: pointer; transition: all 0.15s;
-  }
-  .btn-cancel:hover { background: var(--surface2); color: var(--text); }
-  .btn-save {
-    padding: 9px 24px; border-radius: var(--radius-sm);
-    border: none;
-    color: #fff; font-family: 'DM Sans', sans-serif;
-    font-size: 0.86rem; font-weight: 600; cursor: pointer;
-    transition: all 0.18s;
-  }
-  .btn-save:hover { filter: brightness(1.1); }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed; bottom: 28px; right: 28px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 20px; font-size: 0.84rem;
-    color: var(--text); z-index: 200;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    transform: translateY(12px); opacity: 0;
-    transition: all 0.22s ease;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  /* ── Welcome dashboard ── */
-  .dashboard { padding: 32px; }
-  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
-  .dash-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative; overflow: hidden;
-  }
-  .dash-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  }
-  .dash-card:hover { border-color: var(--muted); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
-  .dash-card-icon { font-size: 2rem; margin-bottom: 12px; }
-  .dash-card h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px; }
-  .dash-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
-  .dash-card .dash-count {
-    position: absolute; top: 16px; right: 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem; color: var(--muted);
-    background: var(--surface2); padding: 3px 10px; border-radius: 20px;
-  }
-  .dash-welcome h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; }
-  .dash-welcome h2 span { color: var(--gold); }
-  .dash-welcome p { color: var(--muted); font-size: 0.88rem; margin-top: 6px; }
-
-  /* accent colors per register */
-  .r0 { --rc: var(--accent1); }
-  .r1 { --rc: var(--accent2); }
-  .r2 { --rc: var(--accent3); }
-  .r3 { --rc: var(--accent4); }
-  .dash-card.r0::before { background: var(--accent1); }
-  .dash-card.r1::before { background: var(--accent2); }
-  .dash-card.r2::before { background: var(--accent3); }
-  .dash-card.r3::before { background: var(--accent4); }
-
-  .tag {
-    display: inline-block; padding: 2px 10px; border-radius: 20px;
-    font-size: 0.7rem; font-weight: 600;
-    margin-bottom: 10px;
-  }
+/* DATE GROUP HEADER */
+.dgroup-hdr{padding:8px 14px 4px;font-size:0.68rem;font-weight:800;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
 </style>
 </head>
 <body>
-<div class="shell">
 
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <h1>Office<span>Suite</span></h1>
-      <p>Register Manager v1.0</p>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Registers</div>
-      <button class="nav-btn active" onclick="navigate(-1)" id="nav--1">
-        <span class="nav-dot" style="background:#f0a94c"></span>
-        Dashboard
-      </button>
-      <button class="nav-btn r0" onclick="navigate(0)" id="nav-0">
-        <span class="nav-dot" style="background:var(--accent1)"></span>
-        Imprest Bill
-        <span class="nav-count" id="cnt-0">0</span>
-      </button>
-      <button class="nav-btn r1" onclick="navigate(1)" id="nav-1">
-        <span class="nav-dot" style="background:var(--accent2)"></span>
-        Dead Stock
-        <span class="nav-count" id="cnt-1">0</span>
-      </button>
-      <button class="nav-btn r2" onclick="navigate(2)" id="nav-2">
-        <span class="nav-dot" style="background:var(--accent3)"></span>
-        Consumable
-        <span class="nav-count" id="cnt-2">0</span>
-      </button>
-      <button class="nav-btn r3" onclick="navigate(3)" id="nav-3">
-        <span class="nav-dot" style="background:var(--accent4)"></span>
-        Salary
-        <span class="nav-count" id="cnt-3">0</span>
-      </button>
-    </div>
-    <div class="sidebar-footer">
-      All data saved in browser.<br/>
-      Open registers to add entries.
-    </div>
-  </aside>
-
-  <!-- ── Main ── -->
-  <main class="main" id="main">
-    <!-- content injected by JS -->
-  </main>
+<div class="top-hdr">
+  <div class="app-logo">Office<span>Suite</span></div>
+  <div class="total-pill" id="gtotal">₹0.00</div>
 </div>
 
-<!-- ── Modal ── -->
-<div class="overlay" id="overlay" onclick="closeModalOutside(event)">
-  <div class="modal" id="modal">
-    <div class="modal-head">
-      <div>
-        <h3 id="modal-title">Add Entry</h3>
-        <p id="modal-sub">Fill in the details below</p>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- DASHBOARD -->
+<div class="page active" id="page-dash">
+  <div class="dh">
+    <h2>My <span>Registers</span> 📂</h2>
+    <p>Tap any register to view or add entries</p>
+  </div>
+  <div class="sgrid">
+    <div class="sbox"><div class="sl">Registers</div><div class="sv">4</div></div>
+    <div class="sbox"><div class="sl">Total Entries</div><div class="sv" id="d-ent">0</div></div>
+    <div class="sbox" style="grid-column:span 2">
+      <div class="sl">Combined Grand Total</div>
+      <div class="sv" style="color:var(--gold)" id="d-gt">₹0.00</div>
     </div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-save" id="modal-save" onclick="saveEntry()">Save Entry</button>
+  </div>
+  <div class="rcards" id="rcards"></div>
+</div>
+
+<!-- REGISTER VIEW -->
+<div class="page" id="page-reg">
+  <div class="rtop">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="rtop-info">
+      <h3 id="rtitle">Register</h3>
+      <p id="rsub">Tap + to add</p>
+    </div>
+    <button class="add-btn" id="radd" onclick="openModal()">＋ Add</button>
+  </div>
+  <div class="rstats" id="rstats"></div>
+  <!-- Filter bar -->
+  <div class="fbar" id="fbar">
+    <input class="finput" type="text" placeholder="🔍 Search..." id="sinput" oninput="onSearch(this.value)"/>
+    <input class="finput" type="date" id="fdate-from" onchange="applyFilter()" style="max-width:130px;" title="From date"/>
+    <input class="finput" type="date" id="fdate-to" onchange="applyFilter()" style="max-width:130px;" title="To date"/>
+    <button class="fclr" onclick="clearFilter()" id="clr-btn" style="display:none">✕ Clear</button>
+  </div>
+  <div class="export-row">
+    <button class="exp-btn" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="exp-btn" onclick="exportAll()">📊 Export All Data</button>
+  </div>
+  <div id="rcontent"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="nb active" id="nb-d" onclick="showDash()">
+    <span class="ni">🏠</span><span class="ndot" style="background:var(--gold)"></span>Home
+  </button>
+  <button class="nb" id="nb-0" onclick="openReg(0)">
+    <span class="ni">🧾</span><span class="ndot" style="background:var(--a1)"></span>
+    <span class="nbadge" id="b0"></span>Imprest
+  </button>
+  <button class="nb" id="nb-1" onclick="openReg(1)">
+    <span class="ni">📋</span><span class="ndot" style="background:var(--a2)"></span>
+    <span class="nbadge" id="b1"></span>Dead Stock
+  </button>
+  <button class="nb" id="nb-2" onclick="openReg(2)">
+    <span class="ni">🗂️</span><span class="ndot" style="background:var(--a3)"></span>
+    <span class="nbadge" id="b2"></span>Consumable
+  </button>
+  <button class="nb" id="nb-3" onclick="openReg(3)">
+    <span class="ni">💼</span><span class="ndot" style="background:var(--a4)"></span>
+    <span class="nbadge" id="b3"></span>Salary
+  </button>
+</nav>
+
+<!-- MODAL -->
+<div class="ovlay" id="ovlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mhead">
+      <div><h3 id="mtitle">Add Entry</h3><p id="msub"></p></div>
+      <button class="mcls" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody" id="mbody"></div>
+    <div class="mfoot">
+      <button class="bcnl" onclick="closeModal()">Cancel</button>
+      <button class="bsave" id="bsave" onclick="saveEntry()">💾 Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE -->
+<div class="dovlay" id="dovlay">
+  <div class="dbox">
+    <h4>Delete Entry?</h4>
+    <p>This entry will be permanently removed.</p>
+    <div class="dbtns">
+      <button class="dno" onclick="closeDel()">Cancel</button>
+      <button class="dyes" onclick="confirmDel()">Delete</button>
     </div>
   </div>
 </div>
@@ -435,491 +316,358 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════
-//  DATA LAYER  (localStorage)
-// ══════════════════════════════════════════════════
-const KEYS = ['imprest','deadstock','consumable','salary'];
-function load(k) { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } }
-function save(k,d) { localStorage.setItem(k, JSON.stringify(d)); }
+// ── DATA ──
+const SK=['imprest','deadstock','consumable','salary'];
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]');}catch{return[];}};
+const sv=(k,d)=>localStorage.setItem(k,JSON.stringify(d));
+const DB=[ld('imprest'),ld('deadstock'),ld('consumable'),ld('salary')];
 
-let data = {
-  imprest:    load('imprest'),
-  deadstock:  load('deadstock'),
-  consumable: load('consumable'),
-  salary:     load('salary'),
-};
-const KEYS_MAP = [data.imprest, data.deadstock, data.consumable, data.salary];
-const STORE_KEYS = ['imprest','deadstock','consumable','salary'];
-
-// ══════════════════════════════════════════════════
-//  REGISTER CONFIGS
-// ══════════════════════════════════════════════════
-const REGISTERS = [
+// ── CONFIGS ──
+const R=[
   {
-    name: 'Imprest Bill',
-    emoji: '🧾',
-    color: 'var(--accent1)',
-    bg: 'rgba(108,143,255,0.12)',
-    desc: 'Capital goods purchase with GST tracking',
-    tag: 'Capital Expense',
-    fields: [
-      { key:'itemName',   label:'Item Name',      type:'text',   placeholder:'e.g. Office Chair' },
-      { key:'memoNo',     label:'Cash Memo No.',  type:'text',   placeholder:'e.g. CM/2024/001' },
-      { key:'price',      label:'Item Price (₹)', type:'number', placeholder:'0.00' },
-      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
-      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    name:'Imprest Bill',emoji:'🧾',color:'var(--a1)',bg:'rgba(108,143,255,0.15)',
+    desc:'Capital goods purchase with GST',
+    fields:[
+      {k:'date',lb:'Date',t:'date',ph:'',isDate:true},
+      {k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Office Chair'},
+      {k:'memoNo',lb:'Cash Memo No.',t:'text',ph:'e.g. CM/001'},
+      {k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
-    calcTotal: r => {
-      const p = +r.price||0, s = p*(+r.sgst||0)/100, c = p*(+r.cgst||0)/100;
-      return { sgstAmt: s, cgstAmt: c, total: p+s+c };
-    },
-    columns: ['S.No','Item Name','Cash Memo No.','Price (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
-    rowFn: (r,i) => {
-      const t = REGISTERS[0].calcTotal(r);
-      return `<td class="td-sno">${i+1}</td>
-              <td>${r.itemName||'—'}</td>
-              <td>${r.memoNo||'—'}</td>
-              <td class="td-num">${fmt(r.price)}</td>
-              <td class="td-num">${r.sgst||0}%</td>
-              <td class="td-num">${fmt(t.sgstAmt)}</td>
-              <td class="td-num">${r.cgst||0}%</td>
-              <td class="td-num">${fmt(t.cgstAmt)}</td>
-              <td class="td-total" style="color:var(--accent1)">${fmt(t.total)}</td>`;
-    },
-    totalFn: rows => rows.reduce((s,r) => s + (REGISTERS[0].calcTotal(r).total), 0),
-    statsLabels: ['Entries','Total Price','Total Tax','Grand Total'],
-    statsFn: rows => {
-      const tot = rows.reduce((s,r)=>{const t=REGISTERS[0].calcTotal(r); return {p:s.p+(+r.price||0),tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{p:0,tax:0,gt:0});
-      return [rows.length, fmtR(tot.p), fmtR(tot.tax), fmtR(tot.gt)];
-    }
+    calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
+    card:(r,t)=>`
+      <div class="ecard-date">${fd(r.date)}</div>
+      <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a1)">${F(t.tot)}</div></div>
+      <div class="emeta">
+        <div class="mc">Memo: <span>${r.memoNo||'—'}</span></div>
+        <div class="mc">Price: <span>${F(r.price)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a1)',1]];},
+    tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
+    sl:['Entries','Total Price','Total Tax','Grand Total'],
+    st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
+    csvHeaders:['Date','Item Name','Cash Memo No','Item Price','SGST %','SGST Amt','CGST %','CGST Amt','Total'],
+    csvRow:r=>{const t=R[0].calc(r);return[fd(r.date),r.itemName,r.memoNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
-    name: 'Dead Stock Register',
-    emoji: '📋',
-    color: 'var(--accent2)',
-    bg: 'rgba(224,92,92,0.12)',
-    desc: 'Capital goods bill & receipt tracking',
-    tag: 'Capital Goods',
-    fields: [
-      { key:'itemName',   label:'Item Name',      type:'text',   placeholder:'e.g. Printer' },
-      { key:'receiptNo',  label:'Receipt No.',    type:'text',   placeholder:'e.g. RCP/001' },
-      { key:'date',       label:'Date',           type:'date',   placeholder:'' },
-      { key:'price',      label:'Item Price (₹)', type:'number', placeholder:'0.00' },
-      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
-      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    name:'Dead Stock Register',emoji:'📋',color:'var(--a2)',bg:'rgba(224,92,92,0.15)',
+    desc:'Capital goods bill tracking',
+    fields:[
+      {k:'date',lb:'Date',t:'date',ph:'',isDate:true},
+      {k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Printer'},
+      {k:'receiptNo',lb:'Receipt No.',t:'text',ph:'e.g. RCP/001'},
+      {k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
-    calcTotal: r => {
-      const p = +r.price||0, s = p*(+r.sgst||0)/100, c = p*(+r.cgst||0)/100;
-      return { sgstAmt: s, cgstAmt: c, total: p+s+c };
-    },
-    columns: ['S.No','Item Name','Receipt No.','Date','Price (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
-    rowFn: (r,i) => {
-      const t = REGISTERS[1].calcTotal(r);
-      return `<td class="td-sno">${i+1}</td>
-              <td>${r.itemName||'—'}</td>
-              <td>${r.receiptNo||'—'}</td>
-              <td class="td-date">${fmtDate(r.date)}</td>
-              <td class="td-num">${fmt(r.price)}</td>
-              <td class="td-num">${r.sgst||0}%</td>
-              <td class="td-num">${fmt(t.sgstAmt)}</td>
-              <td class="td-num">${r.cgst||0}%</td>
-              <td class="td-num">${fmt(t.cgstAmt)}</td>
-              <td class="td-total" style="color:var(--accent2)">${fmt(t.total)}</td>`;
-    },
-    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[1].calcTotal(r).total, 0),
-    statsLabels: ['Entries','Total Price','Total Tax','Grand Total'],
-    statsFn: rows => {
-      const tot = rows.reduce((s,r)=>{const t=REGISTERS[1].calcTotal(r); return {p:s.p+(+r.price||0),tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{p:0,tax:0,gt:0});
-      return [rows.length, fmtR(tot.p), fmtR(tot.tax), fmtR(tot.gt)];
-    }
+    calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
+    card:(r,t)=>`
+      <div class="ecard-date">${fd(r.date)}</div>
+      <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a2)">${F(t.tot)}</div></div>
+      <div class="emeta">
+        <div class="mc">Receipt: <span>${r.receiptNo||'—'}</span></div>
+        <div class="mc">Price: <span>${F(r.price)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a2)',1]];},
+    tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
+    sl:['Entries','Total Price','Total Tax','Grand Total'],
+    st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
+    csvHeaders:['Date','Item Name','Receipt No','Item Price','SGST %','SGST Amt','CGST %','CGST Amt','Total'],
+    csvRow:r=>{const t=R[1].calc(r);return[fd(r.date),r.itemName,r.receiptNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
-    name: 'Consumable Register',
-    emoji: '🗂️',
-    color: 'var(--accent3)',
-    bg: 'rgba(62,207,142,0.12)',
-    desc: 'Day-to-day supplies & consumables',
-    tag: 'Consumables',
-    fields: [
-      { key:'date',       label:'Date',           type:'date',   placeholder:'' },
-      { key:'particular', label:'Particular',     type:'text',   placeholder:'e.g. A4 Paper Ream' },
-      { key:'qty',        label:'Quantity',       type:'number', placeholder:'1' },
-      { key:'rate',       label:'Rate (₹)',       type:'number', placeholder:'0.00' },
-      { key:'sgst',       label:'SGST %',         type:'number', placeholder:'9' },
-      { key:'cgst',       label:'CGST %',         type:'number', placeholder:'9' },
+    name:'Consumable Register',emoji:'🗂️',color:'var(--a3)',bg:'rgba(62,207,142,0.15)',
+    desc:'Day-to-day supplies tracking',
+    fields:[
+      {k:'date',lb:'Date',t:'date',ph:'',isDate:true},
+      {k:'particular',lb:'Particular',t:'text',ph:'e.g. A4 Paper'},
+      {k:'qty',lb:'Quantity',t:'number',ph:'1'},
+      {k:'rate',lb:'Rate (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
-    calcTotal: r => {
-      const base = (+r.qty||0)*(+r.rate||0);
-      const s = base*(+r.sgst||0)/100, c = base*(+r.cgst||0)/100;
-      return { base, sgstAmt: s, cgstAmt: c, total: base+s+c };
-    },
-    columns: ['S.No','Date','Particular','Qty','Rate (₹)','SGST %','SGST Amt','CGST %','CGST Amt','Total (₹)'],
-    rowFn: (r,i) => {
-      const t = REGISTERS[2].calcTotal(r);
-      return `<td class="td-sno">${i+1}</td>
-              <td class="td-date">${fmtDate(r.date)}</td>
-              <td>${r.particular||'—'}</td>
-              <td class="td-num">${r.qty||0}</td>
-              <td class="td-num">${fmt(r.rate)}</td>
-              <td class="td-num">${r.sgst||0}%</td>
-              <td class="td-num">${fmt(t.sgstAmt)}</td>
-              <td class="td-num">${r.cgst||0}%</td>
-              <td class="td-num">${fmt(t.cgstAmt)}</td>
-              <td class="td-total" style="color:var(--accent3)">${fmt(t.total)}</td>`;
-    },
-    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[2].calcTotal(r).total, 0),
-    statsLabels: ['Entries','Base Amount','Total Tax','Grand Total'],
-    statsFn: rows => {
-      const tot = rows.reduce((s,r)=>{const t=REGISTERS[2].calcTotal(r); return {b:s.b+t.base,tax:s.tax+t.sgstAmt+t.cgstAmt,gt:s.gt+t.total};},{b:0,tax:0,gt:0});
-      return [rows.length, fmtR(tot.b), fmtR(tot.tax), fmtR(tot.gt)];
-    }
+    calc:r=>{const b=(+r.qty||0)*(+r.rate||0),s=b*(+r.sgst||0)/100,c=b*(+r.cgst||0)/100;return{b,sa:s,ca:c,tot:b+s+c};},
+    card:(r,t)=>`
+      <div class="ecard-date">${fd(r.date)}</div>
+      <div class="ectop"><div class="ename">${r.particular||'—'}</div><div class="etotal" style="color:var(--a3)">${F(t.tot)}</div></div>
+      <div class="emeta">
+        <div class="mc">Qty: <span>${r.qty||0}</span></div>
+        <div class="mc">Rate: <span>${F(r.rate)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const b=(+v.qty||0)*(+v.rate||0),s=b*(+v.sgst||0)/100,c=b*(+v.cgst||0)/100;return[['Qty×Rate',F(b),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Grand Total',F(b+s+c),'var(--a3)',1]];},
+    tot:rows=>rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return s+b+sg+cg;},0),
+    sl:['Entries','Base Amount','Total Tax','Grand Total'],
+    st:rows=>{const t=rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return{b:s.b+b,x:s.x+sg+cg,g:s.g+b+sg+cg};},{b:0,x:0,g:0});return[rows.length,F(t.b),F(t.x),F(t.g)];},
+    csvHeaders:['Date','Particular','Qty','Rate','SGST %','SGST Amt','CGST %','CGST Amt','Grand Total'],
+    csvRow:r=>{const t=R[2].calc(r);return[fd(r.date),r.particular,r.qty,r.rate,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
-    name: 'Salary Register',
-    emoji: '💼',
-    color: 'var(--accent4)',
-    bg: 'rgba(240,169,76,0.12)',
-    desc: 'Monthly salary, TDS & deduction record',
-    tag: 'Payroll',
-    fields: [
-      { key:'date',       label:'Date',                type:'date',   placeholder:'' },
-      { key:'gross',      label:'Gross Salary (₹)',   type:'number', placeholder:'0.00' },
-      { key:'tds',        label:'TDS Deduction (₹)',  type:'number', placeholder:'0.00' },
-      { key:'stateTax',   label:'State Tax (₹)',      type:'number', placeholder:'259', readonly:true, defaultVal:259 },
-      { key:'inHand',     label:'In Hand (₹)',        type:'number', placeholder:'0.00' },
+    name:'Salary Register',emoji:'💼',color:'var(--a4)',bg:'rgba(240,169,76,0.15)',
+    desc:'Monthly salary & deductions',
+    fields:[
+      {k:'date',lb:'Date',t:'date',ph:'',isDate:true},
+      {k:'gross',lb:'Gross Salary (₹)',t:'number',ph:'0.00'},
+      {k:'tds',lb:'TDS Deduction (₹)',t:'number',ph:'0.00'},
+      {k:'stateTax',lb:'State Tax (₹)',t:'number',ph:'259',ro:true,dv:259},
+      {k:'inHand',lb:'In Hand (₹)',t:'number',ph:'0.00'},
     ],
-    calcTotal: r => {
-      const g=+r.gross||0, tds=+r.tds||0, st=259, net=g-tds-st;
-      return { net, stateTax: st };
-    },
-    columns: ['S.No','Date','Gross Salary','TDS Deduction','State Tax','In Hand','Net Payable'],
-    rowFn: (r,i) => {
-      const t = REGISTERS[3].calcTotal(r);
-      return `<td class="td-sno">${i+1}</td>
-              <td class="td-date">${fmtDate(r.date)}</td>
-              <td class="td-num">${fmt(r.gross)}</td>
-              <td class="td-num" style="color:#e05c5c">${fmt(r.tds)}</td>
-              <td class="td-fixed">₹259.00</td>
-              <td class="td-num">${fmt(r.inHand)}</td>
-              <td class="td-total" style="color:var(--accent4)">${fmt(t.net)}</td>`;
-    },
-    totalFn: rows => rows.reduce((s,r) => s + REGISTERS[3].calcTotal(r).net, 0),
-    statsLabels: ['Months','Total Gross','Total Deductions','Net Payable'],
-    statsFn: rows => {
-      const tot = rows.reduce((s,r)=>{const t=REGISTERS[3].calcTotal(r); return {g:s.g+(+r.gross||0),d:s.d+(+r.tds||0)+259,n:s.n+t.net};},{g:0,d:0,n:0});
-      return [rows.length, fmtR(tot.g), fmtR(tot.d), fmtR(tot.n)];
-    }
+    calc:r=>{return{net:(+r.gross||0)-(+r.tds||0)-259};},
+    card:(r,t)=>`
+      <div class="ecard-date">${fd(r.date)}</div>
+      <div class="ectop"><div class="ename">Salary — ${fd(r.date)}</div><div class="etotal" style="color:var(--a4)">${F(t.net)}</div></div>
+      <div class="emeta">
+        <div class="mc">Gross: <span>${F(r.gross)}</span></div>
+        <div class="mc">TDS: <span style="color:var(--a2)">${F(r.tds)}</span></div>
+        <div class="mc">State Tax: <span style="color:var(--gold)">₹259</span></div>
+        <div class="mc">In Hand: <span>${F(r.inHand)}</span></div>
+      </div>`,
+    prev:v=>{const g=+v.gross||0,tds=+v.tds||0,net=g-tds-259;return[['Gross Salary',F(g),''],['TDS','− '+F(tds),'var(--a2)'],['State Tax','− ₹259','var(--gold)'],['Net Payable',F(net),'var(--a4)',1]];},
+    tot:rows=>rows.reduce((s,r)=>s+(+r.gross||0)-(+r.tds||0)-259,0),
+    sl:['Months','Total Gross','Deductions','Net Payable'],
+    st:rows=>{const t=rows.reduce((s,r)=>({g:s.g+(+r.gross||0),d:s.d+(+r.tds||0)+259,n:s.n+(+r.gross||0)-(+r.tds||0)-259}),{g:0,d:0,n:0});return[rows.length,F(t.g),F(t.d),F(t.n)];},
+    csvHeaders:['Date','Gross Salary','TDS Deduction','State Tax','In Hand','Net Payable'],
+    csvRow:r=>{const t=R[3].calc(r);return[fd(r.date),r.gross,r.tds,259,r.inHand,t.net.toFixed(2)];}
   }
 ];
 
-// ══════════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════════
-function fmt(v) { return '₹' + (+v||0).toLocaleString('en-IN', {minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtR(v) { return '₹' + (+v||0).toLocaleString('en-IN', {minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtDate(d) {
-  if(!d) return '—';
-  const [y,m,day] = d.split('-');
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${day}-${months[+m-1]}-${y}`;
-}
-function updateCounts() {
-  KEYS_MAP.forEach((d,i) => { document.getElementById('cnt-'+i).textContent = d.length; });
+// ── HELPERS ──
+const F=v=>'₹'+(+v||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fd=d=>{if(!d)return'—';try{const[y,m,dy]=d.split('-');return`${dy}-${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]}-${y}`;}catch{return d;}};
+const fmtMonth=d=>{if(!d)return'';try{const[y,m]=d.split('-');return`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;}catch{return d;}};
+
+function updBadges(){
+  DB.forEach((d,i)=>{const b=document.getElementById('b'+i);if(d.length){b.textContent=d.length;b.style.display='block';}else b.style.display='none';});
+  document.getElementById('gtotal').textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
 }
 
-// ══════════════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════════════
-let currentReg = -1;
-function navigate(idx) {
-  currentReg = idx;
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-'+idx).classList.add('active');
-  if(idx === -1) renderDashboard();
-  else renderRegister(idx);
+// ── NAV ──
+let curReg=-1,srch='',fFrom='',fTo='';
+function setNav(id){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showPg(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
+function showDash(){setNav('nb-d');showPg('dash');renderDash();}
+function goBack(){curReg=-1;srch='';fFrom='';fTo='';showDash();}
+function openReg(i){
+  curReg=i;srch='';fFrom='';fTo='';
+  document.getElementById('sinput').value='';
+  document.getElementById('fdate-from').value='';
+  document.getElementById('fdate-to').value='';
+  document.getElementById('clr-btn').style.display='none';
+  setNav('nb-'+i);showPg('reg');renderReg(i);
+}
+function onSearch(v){srch=v;renderReg(curReg);}
+function applyFilter(){
+  fFrom=document.getElementById('fdate-from').value;
+  fTo=document.getElementById('fdate-to').value;
+  document.getElementById('clr-btn').style.display=(fFrom||fTo)?'block':'none';
+  renderReg(curReg);
+}
+function clearFilter(){
+  fFrom='';fTo='';
+  document.getElementById('fdate-from').value='';
+  document.getElementById('fdate-to').value='';
+  document.getElementById('clr-btn').style.display='none';
+  renderReg(curReg);
 }
 
-// ══════════════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════════════
-function renderDashboard() {
-  const main = document.getElementById('main');
-  const totalAll = KEYS_MAP.reduce((s,d,i)=>s+REGISTERS[i].totalFn(d),0);
-  main.innerHTML = `
-    <div class="topbar">
-      <div class="topbar-title">
-        <div class="topbar-icon" style="background:rgba(240,169,76,0.15);font-size:1.3rem">🏢</div>
-        <div>
-          <h2>Office Register Manager</h2>
-          <p>All your registers in one place</p>
-        </div>
-      </div>
-    </div>
-    <div class="stats-strip">
-      <div class="stat-card"><div class="stat-label">Total Registers</div><div class="stat-value">4</div></div>
-      <div class="stat-card"><div class="stat-label">Total Entries</div><div class="stat-value">${KEYS_MAP.reduce((s,d)=>s+d.length,0)}</div></div>
-      <div class="stat-card"><div class="stat-label">Combined Total</div><div class="stat-value" style="color:var(--gold)">${fmtR(totalAll)}</div></div>
-    </div>
-    <div class="dashboard">
-      <div class="dash-welcome">
-        <h2>Welcome to <span>OfficeSuite</span></h2>
-        <p>Click any register below to view entries or add new ones</p>
-      </div>
-      <div class="dash-grid">
-        ${REGISTERS.map((r,i) => `
-          <div class="dash-card r${i}" onclick="navigate(${i})">
-            <div class="dash-count">${KEYS_MAP[i].length} entries</div>
-            <div class="dash-card-icon">${r.emoji}</div>
-            <span class="tag" style="background:${r.bg};color:${r.color}">${r.tag}</span>
-            <h3>${r.name}</h3>
-            <p>${r.desc}</p>
-          </div>
-        `).join('')}
-      </div>
-    </div>`;
+// ── DASHBOARD ──
+function renderDash(){
+  document.getElementById('d-ent').textContent=DB.reduce((s,d)=>s+d.length,0);
+  document.getElementById('d-gt').textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
+  document.getElementById('rcards').innerHTML=R.map((r,i)=>`
+    <div class="rcard" onclick="openReg(${i})">
+      <div class="rcard-bar" style="background:${r.color}"></div>
+      <div class="rcard-icon" style="background:${r.bg}">${r.emoji}</div>
+      <div class="rcard-info"><div class="rcard-name">${r.name}</div><div class="rcard-desc">${r.desc}</div></div>
+      <div class="rcard-right"><div class="rcard-count" style="color:${r.color}">${DB[i].length}</div><div class="rcard-lbl">entries</div></div>
+      <div class="rcard-arr">›</div>
+    </div>`).join('');
 }
 
-// ══════════════════════════════════════════════════
-//  REGISTER VIEW
-// ══════════════════════════════════════════════════
-let searchTerm = '';
-function renderRegister(idx) {
-  const reg = REGISTERS[idx];
-  const rows = KEYS_MAP[idx];
-  const stats = reg.statsFn(rows);
-  const main = document.getElementById('main');
-  const grandTotal = reg.totalFn(rows);
+// ── REGISTER ──
+function renderReg(i){
+  const reg=R[i],rows=DB[i],stats=reg.st(rows);
+  document.getElementById('rtitle').textContent=reg.name;
+  document.getElementById('rsub').textContent=rows.length+' entries · '+((fFrom||fTo)?'Filtered':'All dates');
+  document.getElementById('radd').style.background=reg.color;
+  document.getElementById('rstats').innerHTML=stats.map((v,j)=>`
+    <div class="rsc"><div class="rsl">${reg.sl[j]}</div>
+    <div class="rsv" style="${j===3?'color:'+reg.color:''}">${v}</div></div>`).join('');
 
-  const filtered = rows.filter(r =>
-    Object.values(r).some(v => String(v).toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // filter
+  let filtered=rows.filter(r=>{
+    const sv=Object.values(r).some(v=>String(v).toLowerCase().includes(srch.toLowerCase()));
+    if(!sv)return false;
+    if(fFrom&&r.date&&r.date<fFrom)return false;
+    if(fTo&&r.date&&r.date>fTo)return false;
+    return true;
+  });
 
-  main.innerHTML = `
-    <div class="topbar">
-      <div class="topbar-title">
-        <div class="topbar-icon" style="background:${reg.bg};font-size:1.2rem">${reg.emoji}</div>
-        <div>
-          <h2 style="color:${reg.color}">${reg.name}</h2>
-          <p>${reg.desc}</p>
-        </div>
-      </div>
-      <button class="add-btn" style="background:${reg.color}" onclick="openModal(${idx})">
-        + Add Entry
-      </button>
-    </div>
-    <div class="stats-strip">
-      ${stats.map((v,i)=>`<div class="stat-card">
-        <div class="stat-label">${reg.statsLabels[i]}</div>
-        <div class="stat-value" style="${i===3?'color:'+reg.color:''}">${v}</div>
-      </div>`).join('')}
-    </div>
-    <div class="content">
-      <div class="table-wrap">
-        <div class="table-header">
-          <span>${filtered.length} record${filtered.length!==1?'s':''}</span>
-          <input class="search-box" type="text" placeholder="🔍  Search entries…"
-            value="${searchTerm}" oninput="onSearch(this.value,${idx})"/>
-        </div>
-        ${filtered.length === 0 ? `
-          <div class="empty">
-            <div class="empty-icon">${reg.emoji}</div>
-            <p>${searchTerm ? 'No entries match your search.' : 'No entries yet. Click <b>+ Add Entry</b> to get started.'}</p>
-          </div>` : `
-        <table>
-          <thead><tr>${reg.columns.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead>
-          <tbody>
-            ${filtered.map((r,i) => `
-              <tr>
-                ${reg.rowFn(r, rows.indexOf(r))}
-                <td class="td-actions">
-                  <button class="del-btn" onclick="deleteEntry(${idx},${rows.indexOf(r)})" title="Delete">🗑</button>
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-        <div class="grand-bar">
-          <span class="grand-label">Grand Total</span>
-          <span class="grand-value" style="color:${reg.color}">${fmtR(grandTotal)}</span>
-        </div>`}
-      </div>
-    </div>`;
-}
+  // sort by date desc
+  filtered=[...filtered].sort((a,b)=>{
+    if(!a.date&&!b.date)return 0;
+    if(!a.date)return 1; if(!b.date)return -1;
+    return b.date.localeCompare(a.date);
+  });
 
-function onSearch(val, idx) {
-  searchTerm = val;
-  renderRegister(idx);
-}
-
-// ══════════════════════════════════════════════════
-//  DELETE
-// ══════════════════════════════════════════════════
-function deleteEntry(regIdx, rowIdx) {
-  if(!confirm('Delete this entry?')) return;
-  KEYS_MAP[regIdx].splice(rowIdx,1);
-  save(STORE_KEYS[regIdx], KEYS_MAP[regIdx]);
-  updateCounts();
-  renderRegister(regIdx);
-  toast('Entry deleted');
-}
-
-// ══════════════════════════════════════════════════
-//  MODAL
-// ══════════════════════════════════════════════════
-let activeRegIdx = -1;
-function openModal(idx) {
-  activeRegIdx = idx;
-  const reg = REGISTERS[idx];
-  document.getElementById('modal-title').textContent = `Add Entry — ${reg.name}`;
-  document.getElementById('modal-sub').textContent = reg.desc;
-  document.getElementById('modal-save').style.background = reg.color;
-  document.getElementById('overlay').classList.add('open');
-  renderModalFields(idx);
-}
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  activeRegIdx = -1;
-}
-function closeModalOutside(e) {
-  if(e.target === document.getElementById('overlay')) closeModal();
-}
-
-function renderModalFields(idx) {
-  const reg = REGISTERS[idx];
-  const body = document.getElementById('modal-body');
-
-  // build field pairs
-  const fields = reg.fields;
-  let html = '';
-  for(let i=0; i<fields.length; i+=2) {
-    const f1 = fields[i], f2 = fields[i+1];
-    html += `<div class="field-row">`;
-    html += fieldHTML(f1);
-    if(f2) html += fieldHTML(f2);
-    html += `</div>`;
+  const cont=document.getElementById('rcontent');
+  if(!filtered.length){
+    cont.innerHTML=`<div class="empty"><div class="ei">${reg.emoji}</div>
+      <p>${(srch||fFrom||fTo)?'No entries match your filter.':'No entries yet.<br/>Tap <b>＋ Add</b> to add your first entry!'}</p></div>`;
+    return;
   }
 
-  // calc preview
-  html += `<div class="calc-preview" id="calc-preview">${calcPreviewHTML(idx, {})}</div>`;
-  body.innerHTML = html;
-
-  // attach listeners
-  fields.forEach(f => {
-    const el = document.getElementById('f-'+f.key);
-    if(el && !f.readonly) el.addEventListener('input', () => updateCalcPreview(idx));
+  // group by month
+  const groups={};
+  filtered.forEach(r=>{
+    const key=r.date?r.date.substring(0,7):'unknown';
+    if(!groups[key])groups[key]=[];
+    groups[key].push(r);
   });
 
-  // set defaults
-  fields.forEach(f => {
-    if(f.defaultVal !== undefined) {
-      const el = document.getElementById('f-'+f.key);
-      if(el) el.value = f.defaultVal;
-    }
-    if(f.type === 'date') {
-      const el = document.getElementById('f-'+f.key);
-      if(el) el.value = new Date().toISOString().split('T')[0];
-    }
+  const filteredTotal=reg.tot(filtered);
+
+  let html=`<div class="hint">💡 Long press entry to delete · Sorted latest first</div>`;
+  Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(month=>{
+    const label=month==='unknown'?'No Date':fmtMonth(month+'-01');
+    const mTotal=reg.tot(groups[month]);
+    html+=`<div class="dgroup-hdr">📅 ${label} &nbsp;·&nbsp; ${groups[month].length} entries &nbsp;·&nbsp; <span style="color:${reg.color};font-family:'JetBrains Mono',monospace">${F(mTotal)}</span></div>`;
+    html+=`<div class="elist">`;
+    groups[month].forEach(r=>{
+      const ri=rows.indexOf(r),t=reg.calc(r);
+      html+=`<div class="ecard" id="ec${ri}" ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
+        ${reg.card(r,t)}
+        <button class="edel-btn" onclick="askDel(${i},${ri})">🗑 Delete</button>
+      </div>`;
+    });
+    html+=`</div>`;
   });
-  updateCalcPreview(idx);
+
+  html+=`<div class="gbar"><div class="glabel">${(fFrom||fTo)?'Filtered Total':'Grand Total'}</div>
+    <div class="gval" style="color:${reg.color}">${F(filteredTotal)}</div></div>`;
+  cont.innerHTML=html;
 }
 
-function fieldHTML(f) {
-  return `<div class="field-group">
-    <label>${f.label}</label>
-    <input id="f-${f.key}" type="${f.type}" placeholder="${f.placeholder||''}"
-      ${f.readonly?'readonly':''} step="${f.type==='number'?'0.01':''}"
-      min="${f.type==='number'?'0':''}"/>
+// ── LONG PRESS ──
+let lpT=null;
+function lps(ri,ei){lpT=setTimeout(()=>{const c=document.getElementById('ec'+ei);if(c)c.classList.add('sel');},550);}
+function lpe(){clearTimeout(lpT);}
+
+// ── DELETE ──
+let dRI=-1,dEI=-1;
+function askDel(ri,ei){dRI=ri;dEI=ei;document.getElementById('dovlay').classList.add('open');}
+function closeDel(){document.getElementById('dovlay').classList.remove('open');}
+function confirmDel(){DB[dRI].splice(dEI,1);sv(SK[dRI],DB[dRI]);updBadges();closeDel();renderReg(dRI);toast('🗑️ Deleted');}
+
+// ── MODAL ──
+let aRI=-1;
+function openModal(){
+  aRI=curReg;const reg=R[aRI];
+  document.getElementById('mtitle').textContent='Add — '+reg.name;
+  document.getElementById('msub').textContent=reg.desc;
+  document.getElementById('bsave').style.background=reg.color;
+  buildFields(aRI);
+  document.getElementById('ovlay').classList.add('open');
+}
+function closeModal(){document.getElementById('ovlay').classList.remove('open');}
+document.getElementById('ovlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function buildFields(i){
+  const reg=R[i],flds=reg.fields;let html='';
+  // Date always full width first
+  const dateFld=flds.find(f=>f.isDate);
+  if(dateFld) html+=fh(dateFld);
+  // Rest in pairs
+  const rest=flds.filter(f=>!f.isDate);
+  for(let j=0;j<rest.length;j+=2){
+    const f1=rest[j],f2=rest[j+1];
+    html+=f2?`<div class="frow">${fh(f1)}${fh(f2)}</div>`:fh(f1);
+  }
+  html+=`<div class="cprev" id="cprev">${buildPrev(i,{})}</div>`;
+  document.getElementById('mbody').innerHTML=html;
+  flds.forEach(f=>{
+    const el=document.getElementById('mf-'+f.k);if(!el)return;
+    if(f.dv!==undefined)el.value=f.dv;
+    if(f.isDate)el.value=new Date().toISOString().split('T')[0];
+    if(!f.ro)el.addEventListener('input',()=>refreshPrev(i));
+  });
+  refreshPrev(i);
+}
+function fh(f){
+  return`<div class="fg"><label>${f.lb}</label>
+    <input id="mf-${f.k}" type="${f.t}" placeholder="${f.ph||''}"
+      ${f.ro?'readonly':''} ${f.t==='number'?'inputmode="decimal" step="any" min="0"':''}/>
   </div>`;
 }
+function getV(i){const v={};R[i].fields.forEach(f=>{const e=document.getElementById('mf-'+f.k);v[f.k]=e?e.value:'';});return v;}
+function refreshPrev(i){document.getElementById('cprev').innerHTML=buildPrev(i,getV(i));}
+function buildPrev(i,v){return R[i].prev(v).map(([l,val,c,tot])=>`<div class="crow${tot?' tot':''}"><span>${l}</span><span style="${c?'color:'+c:''}">${val}</span></div>`).join('');}
 
-function getFormVals(idx) {
-  const vals = {};
-  REGISTERS[idx].fields.forEach(f => {
-    const el = document.getElementById('f-'+f.key);
-    vals[f.key] = el ? el.value : '';
+// ── SAVE ──
+function saveEntry(){
+  const i=aRI,reg=R[i],v=getV(i);
+  const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
+  if(miss.length){toast('⚠️ Fill: '+miss.map(f=>f.lb).join(', '));return;}
+  if(i===3)v.stateTax=259;
+  DB[i].push(v);sv(SK[i],DB[i]);
+  updBadges();closeModal();renderReg(i);toast('✅ Saved on '+fd(v.date));
+}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const i=curReg,reg=R[i],rows=DB[i];
+  if(!rows.length){toast('⚠️ No data to export');return;}
+  let csv=[reg.csvHeaders.join(',')];
+  // apply current filter
+  const filtered=rows.filter(r=>{
+    if(fFrom&&r.date&&r.date<fFrom)return false;
+    if(fTo&&r.date&&r.date>fTo)return false;
+    return true;
+  }).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  filtered.forEach(r=>csv.push(reg.csvRow(r).map(v=>`"${v}"`).join(',')));
+  const blob=new Blob([csv.join('\n')],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=reg.name.replace(/ /g,'_')+'_'+(fFrom||'all')+'.csv';
+  a.click();URL.revokeObjectURL(url);
+  toast('📥 CSV exported!');
+}
+
+// ── EXPORT ALL ──
+function exportAll(){
+  let all='OFFICE REGISTER — COMPLETE DATA EXPORT\n';
+  all+='Generated: '+new Date().toLocaleString('en-IN')+'\n\n';
+  R.forEach((reg,i)=>{
+    const rows=DB[i];
+    all+=`${'='.repeat(50)}\n${reg.emoji} ${reg.name.toUpperCase()}\n${'='.repeat(50)}\n`;
+    if(!rows.length){all+='No entries\n\n';return;}
+    all+=reg.csvHeaders.join(' | ')+'\n';
+    all+='-'.repeat(80)+'\n';
+    [...rows].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(r=>{
+      all+=reg.csvRow(r).join(' | ')+'\n';
+    });
+    all+=`\nGrand Total: ${F(reg.tot(rows))}\n\n`;
   });
-  return vals;
+  const blob=new Blob([all],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt';
+  a.click();URL.revokeObjectURL(url);
+  toast('📊 All data exported!');
 }
 
-function updateCalcPreview(idx) {
-  const vals = getFormVals(idx);
-  document.getElementById('calc-preview').innerHTML = calcPreviewHTML(idx, vals);
-}
+// ── TOAST ──
+let tT;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2500);}
 
-function calcPreviewHTML(idx, vals) {
-  const reg = REGISTERS[idx];
-  if(idx === 0) {
-    const p=+vals.price||0, s=p*(+vals.sgst||0)/100, c=p*(+vals.cgst||0)/100;
-    return `<div class="calc-row"><span>Item Price</span><span>${fmt(p)}</span></div>
-            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
-            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
-            <div class="calc-row total"><span>Total Amount</span><span style="color:var(--accent1)">${fmt(p+s+c)}</span></div>`;
-  }
-  if(idx === 1) {
-    const p=+vals.price||0, s=p*(+vals.sgst||0)/100, c=p*(+vals.cgst||0)/100;
-    return `<div class="calc-row"><span>Item Price</span><span>${fmt(p)}</span></div>
-            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
-            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
-            <div class="calc-row total"><span>Total Amount</span><span style="color:var(--accent2)">${fmt(p+s+c)}</span></div>`;
-  }
-  if(idx === 2) {
-    const base=(+vals.qty||0)*(+vals.rate||0), s=base*(+vals.sgst||0)/100, c=base*(+vals.cgst||0)/100;
-    return `<div class="calc-row"><span>Qty × Rate</span><span>${fmt(base)}</span></div>
-            <div class="calc-row"><span>SGST (${vals.sgst||0}%)</span><span>+ ${fmt(s)}</span></div>
-            <div class="calc-row"><span>CGST (${vals.cgst||0}%)</span><span>+ ${fmt(c)}</span></div>
-            <div class="calc-row total"><span>Grand Total</span><span style="color:var(--accent3)">${fmt(base+s+c)}</span></div>`;
-  }
-  if(idx === 3) {
-    const g=+vals.gross||0, tds=+vals.tds||0, st=259, net=g-tds-st;
-    return `<div class="calc-row"><span>Gross Salary</span><span>${fmt(g)}</span></div>
-            <div class="calc-row"><span>TDS Deduction</span><span style="color:#e05c5c">− ${fmt(tds)}</span></div>
-            <div class="calc-row"><span>State Tax (Fixed)</span><span style="color:var(--gold)">− ₹259.00</span></div>
-            <div class="calc-row total"><span>Net Payable</span><span style="color:var(--accent4)">${fmt(net)}</span></div>`;
-  }
-  return '';
-}
-
-// ══════════════════════════════════════════════════
-//  SAVE ENTRY
-// ══════════════════════════════════════════════════
-function saveEntry() {
-  const idx = activeRegIdx;
-  if(idx < 0) return;
-  const vals = getFormVals(idx);
-
-  // basic validation
-  const reg = REGISTERS[idx];
-  const required = reg.fields.filter(f=>!f.readonly && f.key!=='date');
-  const missing = required.filter(f => !vals[f.key] || vals[f.key]==='');
-  if(missing.length) { toast('⚠️ Please fill all required fields'); return; }
-
-  // fix state tax
-  if(idx===3) vals.stateTax = 259;
-
-  KEYS_MAP[idx].push(vals);
-  save(STORE_KEYS[idx], KEYS_MAP[idx]);
-  updateCounts();
-  closeModal();
-  renderRegister(idx);
-  toast('✅ Entry saved successfully!');
-}
-
-// ══════════════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════════════
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'), 2400);
-}
-
-// ══════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════
-updateCounts();
-renderDashboard();
+// ── INIT ──
+updBadges();renderDash();
 </script>
 </body>
 </html>
