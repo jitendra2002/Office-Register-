@@ -4,7 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Office Register</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
@@ -20,41 +19,42 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ── LOADING ── */
+/* LOADING */
 #loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 #loading-overlay.hide{display:none;}
 .big-spinner{width:44px;height:44px;border:4px solid var(--border);
   border-top-color:var(--a1);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.load-msg{color:var(--muted);font-size:0.85rem;font-weight:700;}
-.load-logo{font-size:1.4rem;font-weight:900;}
+.load-msg{color:var(--muted);font-size:0.85rem;font-weight:700;text-align:center;padding:0 20px;}
+.load-logo{font-size:1.5rem;font-weight:900;}
 .load-logo span{color:var(--gold);}
 
-/* ── LOGIN ── */
+/* LOGIN */
 #login-screen{display:none;min-height:100vh;align-items:center;
-  justify-content:center;padding:30px 20px;flex-direction:column;gap:20px;}
+  justify-content:center;padding:30px 20px;flex-direction:column;}
 #login-screen.show{display:flex;}
 .login-card{width:100%;max-width:360px;background:var(--surface);
   border:1px solid var(--border);border-radius:24px;padding:36px 24px;text-align:center;}
-.login-icon{font-size:3.5rem;margin-bottom:4px;}
-.login-card h1{font-size:1.7rem;font-weight:900;margin-bottom:6px;}
+.login-icon{font-size:3.5rem;margin-bottom:8px;}
+.login-card h1{font-size:1.7rem;font-weight:900;margin-bottom:8px;}
 .login-card h1 span{color:var(--gold);}
-.login-card p{color:var(--muted);font-size:0.82rem;line-height:1.6;margin-bottom:28px;}
-.google-btn{
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  width:100%;padding:14px 20px;border:1px solid var(--border);
-  border-radius:var(--rs);background:var(--surface2);color:var(--text);
-  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;
-  cursor:pointer;transition:all 0.18s;margin-bottom:14px;
-}
-.google-btn:hover{border-color:var(--a1);background:rgba(108,143,255,0.08);}
+.login-card p{color:var(--muted);font-size:0.82rem;line-height:1.7;margin-bottom:28px;}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:15px 20px;border:1px solid var(--border);border-radius:var(--rs);
+  background:var(--surface2);color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.18s;margin-bottom:16px;}
+.google-btn:hover{border-color:var(--a1);}
 .google-btn:active{transform:scale(0.97);}
+.google-btn:disabled{opacity:0.6;cursor:not-allowed;}
 .google-logo{width:22px;height:22px;flex-shrink:0;}
-.login-note{font-size:0.72rem;color:var(--muted);line-height:1.6;}
+.login-note{font-size:0.72rem;color:var(--muted);line-height:1.7;}
 .login-note strong{color:var(--a3);}
+.login-err{background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.3);
+  border-radius:8px;padding:10px;font-size:0.78rem;color:var(--a2);
+  margin-bottom:12px;display:none;text-align:center;}
 
-/* ── APP ── */
+/* APP */
 #app-screen{display:none;padding-bottom:calc(var(--nav)+8px);}
 #app-screen.show{display:block;}
 
@@ -65,17 +65,17 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .top-left{display:flex;align-items:center;gap:9px;}
 .app-logo{font-size:1.08rem;font-weight:900;}
 .app-logo span{color:var(--gold);}
-.user-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--border);}
-.user-name{font-size:0.72rem;font-weight:700;color:var(--muted);
-  max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--border);display:none;}
+.user-name{font-size:0.7rem;font-weight:700;color:var(--muted);
+  max-width:80px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .top-right{display:flex;align-items:center;gap:7px;}
 .total-pill{background:var(--surface2);border:1px solid var(--border);
   border-radius:20px;padding:4px 10px;font-size:0.68rem;
   font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;}
 .logout-btn{background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.25);
   border-radius:20px;padding:5px 10px;font-size:0.68rem;font-weight:800;
-  color:var(--a2);cursor:pointer;font-family:'Nunito',sans-serif;
-  transition:all 0.15s;}
+  color:var(--a2);cursor:pointer;font-family:'Nunito',sans-serif;}
 .logout-btn:active{transform:scale(0.95);}
 
 /* BOTTOM NAV */
@@ -84,7 +84,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:2px;background:none;border:none;cursor:pointer;color:var(--muted);
   font-family:'Nunito',sans-serif;font-size:0.55rem;font-weight:800;
-  text-transform:uppercase;letter-spacing:0.05em;padding:4px 2px;position:relative;}
+  text-transform:uppercase;letter-spacing:0.04em;padding:4px 2px;position:relative;}
 .nb.active{color:var(--text);}
 .nb .ni{font-size:1.2rem;line-height:1;}
 .nb .ndot{position:absolute;top:6px;right:calc(50% - 12px);
@@ -99,13 +99,13 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 
 /* DASHBOARD */
 .dh{padding:18px 14px 8px;}
-.dh h2{font-size:1.38rem;font-weight:900;line-height:1.2;}
+.dh h2{font-size:1.38rem;font-weight:900;}
 .dh h2 span{color:var(--gold);}
 .dh p{color:var(--muted);font-size:0.76rem;margin-top:3px;}
 .cloud-badge{display:inline-flex;align-items:center;gap:6px;
   background:rgba(62,207,142,0.1);border:1px solid rgba(62,207,142,0.25);
   border-radius:20px;padding:5px 12px;font-size:0.7rem;font-weight:700;
-  color:var(--a3);margin:0 14px 12px;}
+  color:var(--a3);margin:8px 14px 12px;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--a3);
   animation:pulse 2s infinite;display:inline-block;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
@@ -119,7 +119,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   transition:transform 0.1s;position:relative;overflow:hidden;}
 .rcard:active{transform:scale(0.98);}
 .rcard-bar{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:14px 0 0 14px;}
-.rcard-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.rcard-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:1.4rem;flex-shrink:0;}
 .rcard-info{flex:1;min-width:0;}
 .rcard-name{font-size:0.88rem;font-weight:800;margin-bottom:2px;}
 .rcard-desc{font-size:0.67rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -140,7 +141,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .rtop-info p{font-size:0.62rem;color:var(--muted);}
 .add-btn{display:flex;align-items:center;gap:4px;padding:7px 13px;border:none;
   border-radius:20px;font-family:'Nunito',sans-serif;font-size:0.8rem;font-weight:800;
-  cursor:pointer;color:#fff;flex-shrink:0;transition:transform 0.1s;}
+  cursor:pointer;color:#fff;flex-shrink:0;}
 .add-btn:active{transform:scale(0.94);}
 
 /* STATS */
@@ -167,7 +168,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .exp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
   padding:9px;border:1px solid var(--border);border-radius:var(--rs);
   background:var(--surface);color:var(--muted);font-family:'Nunito',sans-serif;
-  font-size:0.74rem;font-weight:800;cursor:pointer;transition:all 0.15s;}
+  font-size:0.74rem;font-weight:800;cursor:pointer;}
 .exp-btn:active{transform:scale(0.97);}
 
 /* ENTRIES */
@@ -238,8 +239,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;
   font-size:0.85rem;font-weight:700;cursor:pointer;}
 .bsave{flex:2;padding:11px;border:none;border-radius:var(--rs);color:#fff;
-  font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;
-  cursor:pointer;transition:transform 0.1s;}
+  font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;}
 .bsave:active{transform:scale(0.97);}
 
 /* CONFIRM DIALOG */
@@ -253,8 +253,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .dbox p{color:var(--muted);font-size:0.76rem;margin-bottom:18px;line-height:1.6;}
 .dbtns{display:flex;gap:9px;}
 .dbtns button{flex:1;padding:11px;border-radius:var(--rs);
-  font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;
-  cursor:pointer;border:none;}
+  font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;cursor:pointer;border:none;}
 .dno{background:var(--surface2);color:var(--text);border:1px solid var(--border)!important;}
 .dyes{background:var(--a2);color:#fff;}
 
@@ -274,7 +273,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 <div id="loading-overlay">
   <div class="big-spinner"></div>
   <div class="load-logo">Office<span>Suite</span></div>
-  <div class="load-msg" id="load-msg">Loading...</div>
+  <div class="load-msg" id="load-msg">Starting app...</div>
 </div>
 
 <!-- LOGIN -->
@@ -282,12 +281,9 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   <div class="login-card">
     <div class="login-icon">🏢</div>
     <h1>Office<span>Suite</span></h1>
-    <p>
-      Your office register manager.<br/>
-      Sign in with Google to save your data<br/>
-      securely on the cloud.
-    </p>
-    <button class="google-btn" onclick="signInGoogle()">
+    <p>Sign in with your Google account to access your registers securely from any device.</p>
+    <div class="login-err" id="login-err"></div>
+    <button class="google-btn" id="google-btn" onclick="signInGoogle()">
       <svg class="google-logo" viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -298,8 +294,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
     </button>
     <div class="login-note">
       <strong>✅ 100% Free</strong> · No credit card needed<br/>
-      Your data is stored securely on Firebase Cloud.<br/>
-      Login from any device with the same Google account.
+      Data saved securely on Firebase Cloud.<br/>
+      Works on any device with same Google account.
     </div>
   </div>
 </div>
@@ -309,7 +305,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   <div class="top-hdr">
     <div class="top-left">
       <div class="app-logo">Office<span>Suite</span></div>
-      <img class="user-avatar" id="user-avatar" src="" alt="" style="display:none"/>
+      <img class="user-avatar" id="user-avatar" src="" alt=""/>
       <div class="user-name" id="user-name"></div>
     </div>
     <div class="top-right">
@@ -318,7 +314,6 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div class="page active" id="page-dash">
     <div class="dh">
       <h2>My <span>Registers</span> 📂</h2>
@@ -338,13 +333,12 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
     <div class="rcards" id="rcards"></div>
   </div>
 
-  <!-- REGISTER VIEW -->
   <div class="page" id="page-reg">
     <div class="rtop">
       <button class="back-btn" onclick="goBack()">←</button>
       <div class="rtop-info">
         <h3 id="rtitle">Register</h3>
-        <p id="rsub">Tap + to add</p>
+        <p id="rsub">Loading...</p>
       </div>
       <button class="add-btn" id="radd" onclick="openModal()">＋ Add</button>
     </div>
@@ -353,7 +347,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
       <input class="finput" type="text" placeholder="🔍 Search..." id="sinput" oninput="onSearch(this.value)"/>
       <input class="finput" type="date" id="fdate-from" onchange="applyFilter()" style="max-width:125px;"/>
       <input class="finput" type="date" id="fdate-to" onchange="applyFilter()" style="max-width:125px;"/>
-      <button class="fclr" id="clr-btn" onclick="clearFilter()" style="display:none">✕ Clear</button>
+      <button class="fclr" id="clr-btn" onclick="clearFilter()" style="display:none">✕</button>
     </div>
     <div class="export-row">
       <button class="exp-btn" onclick="exportCSV()">📥 Export CSV</button>
@@ -362,7 +356,6 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
     <div id="rcontent"></div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bnav">
     <button class="nb active" id="nb-d" onclick="showDash()">
       <span class="ni">🏠</span><span class="ndot" style="background:var(--gold)"></span>Home
@@ -402,7 +395,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- CONFIRM DIALOG -->
+<!-- CONFIRM -->
 <div class="dovlay" id="dovlay">
   <div class="dbox">
     <div class="dicon" id="dicon">⚠️</div>
@@ -417,7 +410,6 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -428,7 +420,7 @@ import { getFirestore, collection, addDoc, getDocs,
          deleteDoc, doc, query, orderBy }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ── FIREBASE CONFIG ──
+// ── CONFIG ──
 const firebaseConfig = {
   apiKey: "AIzaSyB--PP8WzNvjGF2nBeAuVu_Ij_Ufr3VJ_I",
   authDomain: "office-register-dda75.firebaseapp.com",
@@ -438,9 +430,9 @@ const firebaseConfig = {
   appId: "1:224201239007:web:c5658fab5e67359f97fc6a"
 };
 
-const fbApp  = initializeApp(firebaseConfig);
-const auth   = getAuth(fbApp);
-const db     = getFirestore(fbApp);
+const fbApp    = initializeApp(firebaseConfig);
+const auth     = getAuth(fbApp);
+const db       = getFirestore(fbApp);
 const provider = new GoogleAuthProvider();
 
 // ── STATE ──
@@ -453,26 +445,57 @@ const SK=['imprest','deadstock','consumable','salary'];
 
 // ── HELPERS ──
 const F=v=>'₹'+(+v||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fd=d=>{if(!d)return'—';try{const[y,m,dy]=d.split('-');return`${dy}-${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]}-${y}`;}catch{return d;}};
-const fmtM=d=>{if(!d)return'';try{const[y,m]=d.split('-');return`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;}catch{return d;}};
+const fd=d=>{
+  if(!d)return'—';
+  try{const[y,m,dy]=d.split('-');
+  return`${dy}-${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]}-${y}`;}
+  catch{return d;}
+};
+const fmtM=d=>{
+  if(!d)return'';
+  try{const[y,m]=d.split('-');
+  return`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;}
+  catch{return d;}
+};
 
-function setLoadMsg(m){document.getElementById('load-msg').textContent=m;}
-function showLoading(m){setLoadMsg(m||'Loading...');document.getElementById('loading-overlay').classList.remove('hide');}
-function hideLoading(){document.getElementById('loading-overlay').classList.add('hide');}
+// ── LOADING ──
+const showLoading=(m)=>{
+  document.getElementById('load-msg').textContent=m||'Loading...';
+  document.getElementById('loading-overlay').classList.remove('hide');
+};
+const hideLoading=()=>document.getElementById('loading-overlay').classList.add('hide');
+
+// ── TOAST ──
+let tT;
+window.toast=m=>{
+  const e=document.getElementById('toast');
+  e.textContent=m;e.classList.add('show');
+  clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2800);
+};
 
 // ── REGISTER CONFIGS ──
 const R=[
   {
     name:'Imprest Bill',emoji:'🧾',color:'var(--a1)',bg:'rgba(108,143,255,0.15)',desc:'Capital goods with GST',
-    fields:[{k:'date',lb:'Date',t:'date',isDate:true},{k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Office Chair'},
-      {k:'memoNo',lb:'Cash Memo No.',t:'text',ph:'CM/001'},{k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
-      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},{k:'cgst',lb:'CGST %',t:'number',ph:'9'}],
+    fields:[
+      {k:'date',lb:'Date',t:'date',isDate:true},
+      {k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Office Chair'},
+      {k:'memoNo',lb:'Cash Memo No.',t:'text',ph:'CM/001'},
+      {k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'}
+    ],
     calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
     card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a1)">${F(t.tot)}</div></div>
-      <div class="emeta"><div class="mc">Memo: <span>${r.memoNo||'—'}</span></div><div class="mc">Price: <span>${F(r.price)}</span></div>
-      <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div><div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div></div>`,
-    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a1)',1]];},
+      <div class="emeta">
+        <div class="mc">Memo: <span>${r.memoNo||'—'}</span></div>
+        <div class="mc">Price: <span>${F(r.price)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;
+      return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a1)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
     sl:['Entries','Total Price','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
@@ -481,15 +504,25 @@ const R=[
   },
   {
     name:'Dead Stock Register',emoji:'📋',color:'var(--a2)',bg:'rgba(224,92,92,0.15)',desc:'Capital goods bills',
-    fields:[{k:'date',lb:'Date',t:'date',isDate:true},{k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Printer'},
-      {k:'receiptNo',lb:'Receipt No.',t:'text',ph:'RCP/001'},{k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
-      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},{k:'cgst',lb:'CGST %',t:'number',ph:'9'}],
+    fields:[
+      {k:'date',lb:'Date',t:'date',isDate:true},
+      {k:'itemName',lb:'Item Name',t:'text',ph:'e.g. Printer'},
+      {k:'receiptNo',lb:'Receipt No.',t:'text',ph:'RCP/001'},
+      {k:'price',lb:'Item Price (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'}
+    ],
     calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
     card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a2)">${F(t.tot)}</div></div>
-      <div class="emeta"><div class="mc">Receipt: <span>${r.receiptNo||'—'}</span></div><div class="mc">Price: <span>${F(r.price)}</span></div>
-      <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div><div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div></div>`,
-    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a2)',1]];},
+      <div class="emeta">
+        <div class="mc">Receipt: <span>${r.receiptNo||'—'}</span></div>
+        <div class="mc">Price: <span>${F(r.price)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;
+      return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a2)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
     sl:['Entries','Total Price','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
@@ -498,15 +531,25 @@ const R=[
   },
   {
     name:'Consumable Register',emoji:'🗂️',color:'var(--a3)',bg:'rgba(62,207,142,0.15)',desc:'Daily supplies tracking',
-    fields:[{k:'date',lb:'Date',t:'date',isDate:true},{k:'particular',lb:'Particular',t:'text',ph:'e.g. A4 Paper'},
-      {k:'qty',lb:'Quantity',t:'number',ph:'1'},{k:'rate',lb:'Rate (₹)',t:'number',ph:'0.00'},
-      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},{k:'cgst',lb:'CGST %',t:'number',ph:'9'}],
+    fields:[
+      {k:'date',lb:'Date',t:'date',isDate:true},
+      {k:'particular',lb:'Particular',t:'text',ph:'e.g. A4 Paper'},
+      {k:'qty',lb:'Quantity',t:'number',ph:'1'},
+      {k:'rate',lb:'Rate (₹)',t:'number',ph:'0.00'},
+      {k:'sgst',lb:'SGST %',t:'number',ph:'9'},
+      {k:'cgst',lb:'CGST %',t:'number',ph:'9'}
+    ],
     calc:r=>{const b=(+r.qty||0)*(+r.rate||0),s=b*(+r.sgst||0)/100,c=b*(+r.cgst||0)/100;return{b,sa:s,ca:c,tot:b+s+c};},
     card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.particular||'—'}</div><div class="etotal" style="color:var(--a3)">${F(t.tot)}</div></div>
-      <div class="emeta"><div class="mc">Qty: <span>${r.qty||0}</span></div><div class="mc">Rate: <span>${F(r.rate)}</span></div>
-      <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div><div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div></div>`,
-    prev:v=>{const b=(+v.qty||0)*(+v.rate||0),s=b*(+v.sgst||0)/100,c=b*(+v.cgst||0)/100;return[['Qty×Rate',F(b),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Grand Total',F(b+s+c),'var(--a3)',1]];},
+      <div class="emeta">
+        <div class="mc">Qty: <span>${r.qty||0}</span></div>
+        <div class="mc">Rate: <span>${F(r.rate)}</span></div>
+        <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
+        <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
+      </div>`,
+    prev:v=>{const b=(+v.qty||0)*(+v.rate||0),s=b*(+v.sgst||0)/100,c=b*(+v.cgst||0)/100;
+      return[['Qty×Rate',F(b),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Grand Total',F(b+s+c),'var(--a3)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return s+b+sg+cg;},0),
     sl:['Entries','Base Amount','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return{b:s.b+b,x:s.x+sg+cg,g:s.g+b+sg+cg};},{b:0,x:0,g:0});return[rows.length,F(t.b),F(t.x),F(t.g)];},
@@ -515,18 +558,24 @@ const R=[
   },
   {
     name:'Salary Register',emoji:'💼',color:'var(--a4)',bg:'rgba(240,169,76,0.15)',desc:'Monthly salary & deductions',
-    fields:[{k:'date',lb:'Date',t:'date',isDate:true},{k:'gross',lb:'Gross Salary (₹)',t:'number',ph:'0.00'},
+    fields:[
+      {k:'date',lb:'Date',t:'date',isDate:true},
+      {k:'gross',lb:'Gross Salary (₹)',t:'number',ph:'0.00'},
       {k:'tds',lb:'TDS Deduction (₹)',t:'number',ph:'0.00'},
       {k:'stateTax',lb:'State Tax (₹)',t:'number',ph:'259',ro:true,dv:259},
-      {k:'inHand',lb:'In Hand (₹)',t:'number',ph:'0.00'}],
+      {k:'inHand',lb:'In Hand (₹)',t:'number',ph:'0.00'}
+    ],
     calc:r=>({net:(+r.gross||0)-(+r.tds||0)-259}),
     card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">Salary — ${fd(r.date)}</div><div class="etotal" style="color:var(--a4)">${F(t.net)}</div></div>
-      <div class="emeta"><div class="mc">Gross: <span>${F(r.gross)}</span></div>
-      <div class="mc">TDS: <span style="color:var(--a2)">${F(r.tds)}</span></div>
-      <div class="mc">State Tax: <span style="color:var(--gold)">₹259</span></div>
-      <div class="mc">In Hand: <span>${F(r.inHand)}</span></div></div>`,
-    prev:v=>{const g=+v.gross||0,tds=+v.tds||0,net=g-tds-259;return[['Gross',F(g),''],['TDS','− '+F(tds),'var(--a2)'],['State Tax','− ₹259','var(--gold)'],['Net Payable',F(net),'var(--a4)',1]];},
+      <div class="emeta">
+        <div class="mc">Gross: <span>${F(r.gross)}</span></div>
+        <div class="mc">TDS: <span style="color:var(--a2)">${F(r.tds)}</span></div>
+        <div class="mc">State Tax: <span style="color:var(--gold)">₹259</span></div>
+        <div class="mc">In Hand: <span>${F(r.inHand)}</span></div>
+      </div>`,
+    prev:v=>{const g=+v.gross||0,tds=+v.tds||0,net=g-tds-259;
+      return[['Gross',F(g),''],['TDS','− '+F(tds),'var(--a2)'],['State Tax','− ₹259','var(--gold)'],['Net Payable',F(net),'var(--a4)',1]];},
     tot:rows=>rows.reduce((s,r)=>s+(+r.gross||0)-(+r.tds||0)-259,0),
     sl:['Months','Total Gross','Deductions','Net Payable'],
     st:rows=>{const t=rows.reduce((s,r)=>({g:s.g+(+r.gross||0),d:s.d+(+r.tds||0)+259,n:s.n+(+r.gross||0)-(+r.tds||0)-259}),{g:0,d:0,n:0});return[rows.length,F(t.g),F(t.d),F(t.n)];},
@@ -535,51 +584,110 @@ const R=[
   }
 ];
 
-// ── AUTH STATE ──
+// ── FIRESTORE ──
+async function loadAll(){
+  DB=[[],[],[],[]];
+  for(let i=0;i<4;i++){
+    try{
+      const snap=await getDocs(
+        query(collection(db,'users',currentUser.uid,SK[i]),orderBy('createdAt','desc'))
+      );
+      DB[i]=snap.docs.map(d=>({...d.data(),_id:d.id}));
+    }catch(e){
+      // If index error, load without ordering
+      try{
+        const snap2=await getDocs(collection(db,'users',currentUser.uid,SK[i]));
+        DB[i]=snap2.docs.map(d=>({...d.data(),_id:d.id}));
+      }catch(e2){console.warn('Load failed for',SK[i],e2);}
+    }
+  }
+}
+
+async function saveToFS(i,entry){
+  const ref=await addDoc(
+    collection(db,'users',currentUser.uid,SK[i]),
+    {...entry, createdAt:new Date().toISOString()}
+  );
+  return ref.id;
+}
+
+// ── AUTH STATE — the main controller ──
 onAuthStateChanged(auth, async user=>{
-  if(user){
-    currentUser=user;
-    setLoadMsg('Loading your registers...');
-    await loadAll();
-    // show app
-    document.getElementById('login-screen').classList.remove('show');
-    document.getElementById('app-screen').classList.add('show');
-    // set user info
-    const av=document.getElementById('user-avatar');
-    const nm=document.getElementById('user-name');
-    if(user.photoURL){av.src=user.photoURL;av.style.display='block';}
-    if(nm) nm.textContent=user.displayName||user.email||'';
-    const wm=document.getElementById('welcome-msg');
-    if(wm) wm.textContent='Welcome, '+(user.displayName||'').split(' ')[0]+'! 👋';
-    updBadges(); renderDash();
+  try{
+    if(user){
+      currentUser=user;
+      showLoading('Loading your data...');
+      await loadAll();
+      // Update UI
+      const av=document.getElementById('user-avatar');
+      const nm=document.getElementById('user-name');
+      const wm=document.getElementById('welcome-msg');
+      if(user.photoURL){av.src=user.photoURL;av.style.display='block';}
+      if(nm)nm.textContent=(user.displayName||'').split(' ')[0];
+      if(wm)wm.textContent='Welcome, '+(user.displayName||'User').split(' ')[0]+'! 👋';
+      // Show app
+      document.getElementById('login-screen').classList.remove('show');
+      document.getElementById('app-screen').classList.add('show');
+      updBadges();
+      renderDash();
+      hideLoading();
+    } else {
+      currentUser=null;
+      DB=[[],[],[],[]];
+      document.getElementById('app-screen').classList.remove('show');
+      document.getElementById('login-screen').classList.add('show');
+      hideLoading();
+    }
+  }catch(err){
+    console.error('Auth state error:',err);
     hideLoading();
-  } else {
-    currentUser=null; DB=[[],[],[],[]];
-    document.getElementById('app-screen').classList.remove('show');
-    document.getElementById('login-screen').classList.add('show');
+    window.toast('❌ Error: '+err.message);
+  }
+});
+
+// ── Handle redirect result (mobile fallback) ──
+getRedirectResult(auth).catch(e=>{
+  if(e.code!=='auth/no-auth-event'){
+    console.error('Redirect error:',e);
+    const errEl=document.getElementById('login-err');
+    if(errEl){errEl.textContent='Login failed: '+e.message;errEl.style.display='block';}
     hideLoading();
   }
 });
 
-// ── HANDLE REDIRECT (for mobile) ──
-getRedirectResult(auth).then(result=>{
-  if(result?.user){/* handled by onAuthStateChanged */}
-}).catch(e=>{ console.error('Redirect error',e); hideLoading(); });
-
 // ── GOOGLE SIGN IN ──
 window.signInGoogle=async function(){
-  showLoading('Opening Google login...');
+  const btn=document.getElementById('google-btn');
+  const errEl=document.getElementById('login-err');
+  errEl.style.display='none';
+  btn.disabled=true;
+  btn.textContent='Opening Google...';
+  showLoading('Connecting to Google...');
   try{
-    // Try popup first (works on desktop & most mobile browsers)
-    await signInWithPopup(auth, provider);
+    await signInWithPopup(auth,provider);
+    // onAuthStateChanged handles everything after
   }catch(e){
-    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
-      // Fallback to redirect for mobile
-      showLoading('Redirecting to Google...');
-      signInWithRedirect(auth, provider);
+    if(e.code==='auth/popup-blocked'||e.code==='auth/cancelled-popup-request'){
+      // Try redirect for mobile
+      try{
+        await signInWithRedirect(auth,provider);
+      }catch(e2){
+        hideLoading();
+        errEl.textContent='Login failed. Please try again.';
+        errEl.style.display='block';
+        btn.disabled=false;
+        btn.innerHTML=`<svg class="google-logo" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google`;
+      }
+    } else if(e.code!=='auth/popup-closed-by-user'){
+      hideLoading();
+      errEl.textContent=e.message||'Login failed. Try again.';
+      errEl.style.display='block';
+      btn.disabled=false;
+      btn.innerHTML=`<svg class="google-logo" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google`;
     } else {
       hideLoading();
-      toast('❌ Login failed: '+e.message);
+      btn.disabled=false;
+      btn.innerHTML=`<svg class="google-logo" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google`;
     }
   }
 };
@@ -589,7 +697,7 @@ window.askLogout=function(){
   pendingAction='logout';
   document.getElementById('dicon').textContent='🚪';
   document.getElementById('dbox-title').textContent='Logout?';
-  document.getElementById('dbox-msg').textContent='Your data stays safely on Firebase Cloud. Login again anytime with the same Google account.';
+  document.getElementById('dbox-msg').textContent='Your data stays safely on Firebase Cloud. Login anytime with the same Google account.';
   document.getElementById('dyes-btn').textContent='Logout';
   document.getElementById('dyes-btn').style.background='var(--a2)';
   document.getElementById('dovlay').classList.add('open');
@@ -599,40 +707,21 @@ window.confirmAction=async function(){
   closeDel();
   if(pendingAction==='logout'){
     showLoading('Logging out...');
-    await signOut(auth);
-    toast('👋 Logged out. See you soon!');
+    try{await signOut(auth);}catch(e){console.error(e);}
   } else if(pendingAction==='delete'){
     const{ri,ei,id}=pendingData;
     try{
-      if(id){await deleteDoc(doc(db,'users',currentUser.uid,SK[ri],id));}
+      if(id)await deleteDoc(doc(db,'users',currentUser.uid,SK[ri],id));
       DB[ri].splice(ei,1);
-      updBadges(); renderReg(ri);
+      updBadges();renderReg(ri);
       toast('🗑️ Entry deleted');
-    }catch(e){toast('❌ Delete failed. Check internet.');}
+    }catch(e){toast('❌ Delete failed');}
   }
   pendingAction=null;
 };
-window.closeDel=function(){document.getElementById('dovlay').classList.remove('open');};
+window.closeDel=()=>document.getElementById('dovlay').classList.remove('open');
 
-// ── FIRESTORE ──
-async function loadAll(){
-  DB=[[],[],[],[]];
-  for(let i=0;i<4;i++){
-    try{
-      const q=query(collection(db,'users',currentUser.uid,SK[i]),orderBy('createdAt','desc'));
-      const snap=await getDocs(q);
-      DB[i]=snap.docs.map(d=>({...d.data(),_id:d.id}));
-    }catch(e){console.log('Load err',SK[i],e);}
-  }
-}
-
-async function saveToFS(i,entry){
-  const ref=await addDoc(collection(db,'users',currentUser.uid,SK[i]),
-    {...entry,createdAt:new Date().toISOString()});
-  return ref.id;
-}
-
-// ── UI HELPERS ──
+// ── BADGES ──
 function updBadges(){
   DB.forEach((d,i)=>{
     const b=document.getElementById('b'+i);
@@ -641,29 +730,29 @@ function updBadges(){
     else b.style.display='none';
   });
   const el=document.getElementById('gtotal');
-  if(el) el.textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
+  if(el)el.textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
 }
 
+// ── NAV ──
 function setNav(id){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');}
 function showPg(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const el=document.getElementById('page-'+n);if(el)el.classList.add('active');}
-
-window.showDash=function(){setNav('nb-d');showPg('dash');renderDash();};
-window.goBack=function(){curReg=-1;srch='';fFrom='';fTo='';showDash();};
-window.openReg=function(i){
+window.showDash=()=>{setNav('nb-d');showPg('dash');renderDash();};
+window.goBack=()=>{curReg=-1;srch='';fFrom='';fTo='';showDash();};
+window.openReg=i=>{
   curReg=i;srch='';fFrom='';fTo='';
   ['sinput','fdate-from','fdate-to'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const cb=document.getElementById('clr-btn');if(cb)cb.style.display='none';
   setNav('nb-'+i);showPg('reg');renderReg(i);
 };
 window.onSearch=v=>{srch=v;renderReg(curReg);};
-window.applyFilter=function(){
+window.applyFilter=()=>{
   fFrom=document.getElementById('fdate-from').value;
   fTo=document.getElementById('fdate-to').value;
   const cb=document.getElementById('clr-btn');
   if(cb)cb.style.display=(fFrom||fTo)?'block':'none';
   renderReg(curReg);
 };
-window.clearFilter=function(){
+window.clearFilter=()=>{
   fFrom='';fTo='';
   ['fdate-from','fdate-to'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const cb=document.getElementById('clr-btn');if(cb)cb.style.display='none';
@@ -672,69 +761,86 @@ window.clearFilter=function(){
 
 // ── DASHBOARD ──
 function renderDash(){
-  const te=DB.reduce((s,d)=>s+d.length,0);
-  const gt=DB.reduce((s,d,i)=>s+R[i].tot(d),0);
-  const e1=document.getElementById('d-ent'),e2=document.getElementById('d-gt');
-  if(e1)e1.textContent=te; if(e2)e2.textContent=F(gt);
-  const rc=document.getElementById('rcards');
-  if(rc) rc.innerHTML=R.map((r,i)=>`
-    <div class="rcard" onclick="openReg(${i})">
-      <div class="rcard-bar" style="background:${r.color}"></div>
-      <div class="rcard-icon" style="background:${r.bg}">${r.emoji}</div>
-      <div class="rcard-info"><div class="rcard-name">${r.name}</div><div class="rcard-desc">${r.desc}</div></div>
-      <div class="rcard-right"><div class="rcard-count" style="color:${r.color}">${DB[i].length}</div><div class="rcard-lbl">entries</div></div>
-      <div class="rcard-arr">›</div>
-    </div>`).join('');
+  try{
+    const te=DB.reduce((s,d)=>s+d.length,0);
+    const gt=DB.reduce((s,d,i)=>s+R[i].tot(d),0);
+    const e1=document.getElementById('d-ent'),e2=document.getElementById('d-gt');
+    if(e1)e1.textContent=te;
+    if(e2)e2.textContent=F(gt);
+    const rc=document.getElementById('rcards');
+    if(rc)rc.innerHTML=R.map((r,i)=>`
+      <div class="rcard" onclick="openReg(${i})">
+        <div class="rcard-bar" style="background:${r.color}"></div>
+        <div class="rcard-icon" style="background:${r.bg}">${r.emoji}</div>
+        <div class="rcard-info">
+          <div class="rcard-name">${r.name}</div>
+          <div class="rcard-desc">${r.desc}</div>
+        </div>
+        <div class="rcard-right">
+          <div class="rcard-count" style="color:${r.color}">${DB[i].length}</div>
+          <div class="rcard-lbl">entries</div>
+        </div>
+        <div class="rcard-arr">›</div>
+      </div>`).join('');
+  }catch(e){console.error('renderDash error:',e);}
 }
 
 // ── REGISTER VIEW ──
 function renderReg(i){
-  const reg=R[i],rows=DB[i],stats=reg.st(rows);
-  const rt=document.getElementById('rtitle'),rs=document.getElementById('rsub'),ra=document.getElementById('radd');
-  if(rt)rt.textContent=reg.name;
-  if(rs)rs.textContent=rows.length+' entries · Tap + to add';
-  if(ra)ra.style.background=reg.color;
-  const rsEl=document.getElementById('rstats');
-  if(rsEl) rsEl.innerHTML=stats.map((v,j)=>`
-    <div class="rsc"><div class="rsl">${reg.sl[j]}</div>
-    <div class="rsv" style="${j===3?'color:'+reg.color:''}">${v}</div></div>`).join('');
+  try{
+    const reg=R[i],rows=DB[i],stats=reg.st(rows);
+    const rt=document.getElementById('rtitle');
+    const rs=document.getElementById('rsub');
+    const ra=document.getElementById('radd');
+    if(rt)rt.textContent=reg.name;
+    if(rs)rs.textContent=rows.length+' entries · Tap + to add';
+    if(ra)ra.style.background=reg.color;
+    const rsEl=document.getElementById('rstats');
+    if(rsEl)rsEl.innerHTML=stats.map((v,j)=>`
+      <div class="rsc"><div class="rsl">${reg.sl[j]}</div>
+      <div class="rsv" style="${j===3?'color:'+reg.color:''}">${v}</div></div>`).join('');
 
-  let filtered=rows.filter(r=>{
-    if(srch&&!Object.values(r).some(v=>String(v).toLowerCase().includes(srch.toLowerCase())))return false;
-    if(fFrom&&r.date&&r.date<fFrom)return false;
-    if(fTo&&r.date&&r.date>fTo)return false;
-    return true;
-  });
-  filtered=[...filtered].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-
-  const cont=document.getElementById('rcontent');if(!cont)return;
-  if(!filtered.length){
-    cont.innerHTML=`<div class="empty"><div class="ei">${reg.emoji}</div>
-      <p>${(srch||fFrom||fTo)?'No entries match filter.':'No entries yet.<br/>Tap <b>＋ Add</b> to add your first entry!'}</p></div>`;
-    return;
-  }
-
-  const groups={};
-  filtered.forEach(r=>{const k=r.date?r.date.slice(0,7):'nodate';if(!groups[k])groups[k]=[];groups[k].push(r);});
-  const filteredTot=reg.tot(filtered);
-
-  let html=`<div class="hint">💡 Long press entry to delete</div>`;
-  Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(mo=>{
-    const lbl=mo==='nodate'?'No Date':fmtM(mo+'-01');
-    html+=`<div class="dgroup-hdr">📅 ${lbl} · ${groups[mo].length} entries · <span style="color:${reg.color};font-family:'JetBrains Mono',monospace">${F(reg.tot(groups[mo]))}</span></div>
-      <div class="elist">`;
-    groups[mo].forEach(r=>{
-      const ri=rows.indexOf(r),t=reg.calc(r);
-      html+=`<div class="ecard" id="ec${ri}" ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
-        ${reg.card(r,t)}
-        <button class="edel-btn" onclick="askDel(${i},${ri},'${r._id||''}')">🗑 Delete</button>
-      </div>`;
+    let filtered=rows.filter(r=>{
+      if(srch&&!Object.values(r).some(v=>String(v).toLowerCase().includes(srch.toLowerCase())))return false;
+      if(fFrom&&r.date&&r.date<fFrom)return false;
+      if(fTo&&r.date&&r.date>fTo)return false;
+      return true;
     });
-    html+=`</div>`;
-  });
-  html+=`<div class="gbar"><div class="glabel">${(fFrom||fTo)?'Filtered Total':'Grand Total'}</div>
-    <div class="gval" style="color:${reg.color}">${F(filteredTot)}</div></div>`;
-  cont.innerHTML=html;
+    filtered=[...filtered].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+    const cont=document.getElementById('rcontent');
+    if(!cont)return;
+    if(!filtered.length){
+      cont.innerHTML=`<div class="empty"><div class="ei">${reg.emoji}</div>
+        <p>${(srch||fFrom||fTo)?'No entries match your filter.':'No entries yet.<br/>Tap <b>＋ Add</b> to add your first entry!'}</p></div>`;
+      return;
+    }
+
+    const groups={};
+    filtered.forEach(r=>{
+      const k=r.date?r.date.slice(0,7):'nodate';
+      if(!groups[k])groups[k]=[];
+      groups[k].push(r);
+    });
+
+    let html=`<div class="hint">💡 Long press entry to delete</div>`;
+    Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(mo=>{
+      const lbl=mo==='nodate'?'No Date':fmtM(mo+'-01');
+      html+=`<div class="dgroup-hdr">📅 ${lbl} · ${groups[mo].length} entries · <span style="color:${reg.color};font-family:'JetBrains Mono',monospace">${F(reg.tot(groups[mo]))}</span></div>
+        <div class="elist">`;
+      groups[mo].forEach(r=>{
+        const ri=rows.indexOf(r),t=reg.calc(r);
+        html+=`<div class="ecard" id="ec${ri}" ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
+          ${reg.card(r,t)}
+          <button class="edel-btn" onclick="askDel(${i},${ri},'${r._id||''}')">🗑 Delete</button>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`<div class="gbar"><div class="glabel">${(fFrom||fTo)?'Filtered Total':'Grand Total'}</div>
+      <div class="gval" style="color:${reg.color}">${F(reg.tot(filtered))}</div></div>`;
+    cont.innerHTML=html;
+  }catch(e){console.error('renderReg error:',e);}
 }
 
 // ── LONG PRESS ──
@@ -744,10 +850,10 @@ window.lpe=()=>clearTimeout(lpT);
 
 // ── DELETE ──
 window.askDel=(ri,ei,id)=>{
-  pendingAction='delete'; pendingData={ri,ei,id};
+  pendingAction='delete';pendingData={ri,ei,id};
   document.getElementById('dicon').textContent='🗑️';
   document.getElementById('dbox-title').textContent='Delete Entry?';
-  document.getElementById('dbox-msg').textContent='This entry will be permanently deleted from Firebase.';
+  document.getElementById('dbox-msg').textContent='This will be permanently deleted.';
   document.getElementById('dyes-btn').textContent='Delete';
   document.getElementById('dyes-btn').style.background='var(--a2)';
   document.getElementById('dovlay').classList.add('open');
@@ -755,7 +861,7 @@ window.askDel=(ri,ei,id)=>{
 
 // ── MODAL ──
 window.openModal=function(){
-  aRI=curReg; const reg=R[aRI];
+  aRI=curReg;const reg=R[aRI];
   document.getElementById('mtitle').textContent='Add — '+reg.name;
   document.getElementById('msub').textContent=reg.desc;
   document.getElementById('bsave').style.background=reg.color;
@@ -763,11 +869,13 @@ window.openModal=function(){
   document.getElementById('ovlay').classList.add('open');
 };
 window.closeModal=()=>document.getElementById('ovlay').classList.remove('open');
-document.getElementById('ovlay').addEventListener('click',e=>{if(e.target===document.getElementById('ovlay'))closeModal();});
+document.getElementById('ovlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('ovlay'))closeModal();
+});
 
 function buildFields(i){
-  const flds=R[i].fields; let html='';
-  const df=flds.find(f=>f.isDate); if(df)html+=fh(df);
+  const flds=R[i].fields;let html='';
+  const df=flds.find(f=>f.isDate);if(df)html+=fh(df);
   const rest=flds.filter(f=>!f.isDate);
   for(let j=0;j<rest.length;j+=2){
     html+=rest[j+1]?`<div class="frow">${fh(rest[j])}${fh(rest[j+1])}</div>`:fh(rest[j]);
@@ -775,69 +883,73 @@ function buildFields(i){
   html+=`<div class="cprev" id="cprev">${bldPrev(i,{})}</div>`;
   document.getElementById('mbody').innerHTML=html;
   flds.forEach(f=>{
-    const el=document.getElementById('mf-'+f.k); if(!el)return;
+    const el=document.getElementById('mf-'+f.k);if(!el)return;
     if(f.dv!==undefined)el.value=f.dv;
     if(f.isDate)el.value=new Date().toISOString().split('T')[0];
-    if(!f.ro)el.addEventListener('input',()=>{const cp=document.getElementById('cprev');if(cp)cp.innerHTML=bldPrev(i,getV(i));});
+    if(!f.ro)el.addEventListener('input',()=>{
+      const cp=document.getElementById('cprev');
+      if(cp)cp.innerHTML=bldPrev(i,getV(i));
+    });
   });
-  const cp=document.getElementById('cprev'); if(cp)cp.innerHTML=bldPrev(i,getV(i));
+  const cp=document.getElementById('cprev');
+  if(cp)cp.innerHTML=bldPrev(i,getV(i));
 }
 const fh=f=>`<div class="fg"><label>${f.lb}</label>
   <input id="mf-${f.k}" type="${f.t}" placeholder="${f.ph||''}"
     ${f.ro?'readonly':''} ${f.t==='number'?'inputmode="decimal" step="any" min="0"':''}/>
 </div>`;
 const getV=i=>{const v={};R[i].fields.forEach(f=>{const e=document.getElementById('mf-'+f.k);v[f.k]=e?e.value:'';});return v;};
-const bldPrev=(i,v)=>R[i].prev(v).map(([l,val,c,tot])=>`<div class="crow${tot?' tot':''}"><span>${l}</span><span style="${c?'color:'+c:''}">${val}</span></div>`).join('');
+const bldPrev=(i,v)=>R[i].prev(v).map(([l,val,c,tot])=>`
+  <div class="crow${tot?' tot':''}">
+    <span>${l}</span><span style="${c?'color:'+c:''}">${val}</span>
+  </div>`).join('');
 
 // ── SAVE ──
 window.saveEntry=async function(){
   const i=aRI,reg=R[i],v=getV(i);
   const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
-  if(miss.length){toast('⚠️ Fill: '+miss.map(f=>f.lb).join(', '));return;}
+  if(miss.length){toast('⚠️ Please fill: '+miss.map(f=>f.lb).join(', '));return;}
   if(i===3)v.stateTax=259;
   const btn=document.getElementById('bsave');
-  btn.textContent='Saving...'; btn.disabled=true;
+  btn.textContent='Saving...';btn.disabled=true;
   try{
     const id=await saveToFS(i,v);
-    v._id=id; DB[i].unshift(v);
-    updBadges(); closeModal(); renderReg(i);
+    v._id=id;DB[i].unshift(v);
+    updBadges();closeModal();renderReg(i);
     toast('✅ Saved on '+fd(v.date));
   }catch(e){
-    toast('❌ Save failed. Check internet.'); console.error(e);
+    console.error('Save error:',e);
+    toast('❌ Save failed: '+e.message);
   }
-  btn.textContent='💾 Save Entry'; btn.disabled=false;
+  btn.textContent='💾 Save Entry';btn.disabled=false;
 };
 
 // ── EXPORT ──
 window.exportCSV=function(){
   const i=curReg,reg=R[i];
-  if(!DB[i].length){toast('⚠️ No data');return;}
-  const filtered=DB[i].filter(r=>(!fFrom||!r.date||r.date>=fFrom)&&(!fTo||!r.date||r.date<=fTo))
+  if(!DB[i].length){toast('⚠️ No data to export');return;}
+  const rows=DB[i].filter(r=>(!fFrom||!r.date||r.date>=fFrom)&&(!fTo||!r.date||r.date<=fTo))
     .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const csv=[reg.csvH.join(','),...filtered.map(r=>reg.csvR(r).map(v=>`"${v}"`).join(','))].join('\n');
+  const csv=[reg.csvH.join(','),...rows.map(r=>reg.csvR(r).map(v=>`"${v}"`).join(','))].join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download=reg.name.replace(/ /g,'_')+'.csv'; a.click();
+  a.download=reg.name.replace(/ /g,'_')+'.csv';a.click();
   toast('📥 CSV exported!');
 };
 window.exportAll=function(){
-  let all='OFFICE REGISTER — COMPLETE EXPORT\nDate: '+new Date().toLocaleString('en-IN')+'\n\n';
+  let all='OFFICE REGISTER EXPORT\nDate: '+new Date().toLocaleString('en-IN')+'\n\n';
   R.forEach((reg,i)=>{
     all+='='.repeat(50)+'\n'+reg.emoji+' '+reg.name+'\n'+'='.repeat(50)+'\n';
     if(!DB[i].length){all+='No entries\n\n';return;}
-    all+=reg.csvH.join(' | ')+'\n'+'-'.repeat(80)+'\n';
+    all+=reg.csvH.join(' | ')+'\n'+'-'.repeat(70)+'\n';
     [...DB[i]].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(r=>{all+=reg.csvR(r).join(' | ')+'\n';});
     all+='\nGrand Total: '+F(reg.tot(DB[i]))+'\n\n';
   });
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([all],{type:'text/plain'}));
-  a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt'; a.click();
-  toast('📊 Exported!');
+  a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt';a.click();
+  toast('📊 All data exported!');
 };
-
-// ── TOAST ──
-let tT;
-window.toast=m=>{const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2500);};
 
 </script>
 </body>
