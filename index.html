@@ -16,20 +16,115 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
-  overflow-x:hidden;min-height:100vh;padding-bottom:calc(var(--nav)+8px);
-  -webkit-tap-highlight-color:transparent;}
+  overflow-x:hidden;min-height:100vh;-webkit-tap-highlight-color:transparent;}
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ══════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════ */
+#login-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:30px 20px;
+}
+.login-card{
+  width:100%;max-width:380px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:24px;padding:32px 24px;
+}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .licon{font-size:3rem;margin-bottom:10px;}
+.login-logo h1{font-size:1.6rem;font-weight:900;letter-spacing:-0.02em;}
+.login-logo h1 span{color:var(--gold);}
+.login-logo p{color:var(--muted);font-size:0.82rem;margin-top:4px;}
+
+.login-step{display:none;}
+.login-step.active{display:block;}
+
+.login-label{font-size:0.7rem;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;display:block;}
+.phone-row{display:flex;gap:8px;margin-bottom:16px;}
+.country-code{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:700;padding:12px 10px;width:72px;
+  text-align:center;outline:none;flex-shrink:0;
+}
+.login-input{
+  flex:1;padding:12px 14px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--rs);
+  color:var(--text);font-family:'Nunito',sans-serif;font-size:1.1rem;
+  font-weight:700;outline:none;width:100%;letter-spacing:0.08em;
+  -webkit-appearance:none;
+}
+.login-input:focus{border-color:var(--a1);}
+.otp-row{display:flex;gap:8px;margin-bottom:16px;justify-content:center;}
+.otp-box{
+  width:44px;height:52px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--rs);
+  color:var(--text);font-family:'JetBrains Mono',monospace;
+  font-size:1.4rem;font-weight:700;text-align:center;outline:none;
+  -webkit-appearance:none;
+}
+.otp-box:focus{border-color:var(--a1);}
+
+.login-btn{
+  width:100%;padding:14px;border:none;border-radius:var(--rs);
+  background:var(--a1);color:#fff;font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.15s;
+  margin-bottom:12px;
+}
+.login-btn:active{transform:scale(0.97);}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.login-btn.green{background:var(--a3);}
+
+.login-info{text-align:center;font-size:0.75rem;color:var(--muted);line-height:1.6;}
+.login-info span{color:var(--text);font-weight:700;}
+.back-link{background:none;border:none;color:var(--a1);font-family:'Nunito',sans-serif;
+  font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;
+  display:block;text-align:center;margin-top:8px;}
+.resend-link{background:none;border:none;color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:0.78rem;font-weight:700;cursor:pointer;display:block;
+  text-align:center;margin-top:4px;}
+.resend-link.active{color:var(--a1);text-decoration:underline;}
+
+/* Recaptcha container */
+#recaptcha-container{display:flex;justify-content:center;margin-bottom:14px;}
+
+/* Loading spinner */
+.spinner{display:none;width:22px;height:22px;border:3px solid var(--border);
+  border-top-color:var(--a1);border-radius:50%;animation:spin 0.7s linear infinite;
+  margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading .spinner{display:block;}
+
+/* Error box */
+.err-box{background:rgba(224,92,92,0.12);border:1px solid rgba(224,92,92,0.3);
+  border-radius:var(--rs);padding:10px 12px;font-size:0.78rem;color:var(--a2);
+  margin-bottom:12px;display:none;text-align:center;}
+
+/* ══════════════════════════════
+   MAIN APP
+══════════════════════════════ */
+#app-screen{display:none;padding-bottom:calc(var(--nav)+8px);}
 
 /* TOP */
 .top-hdr{position:sticky;top:0;z-index:50;background:var(--surface);
   border-bottom:1px solid var(--border);padding:11px 14px;
   display:flex;align-items:center;justify-content:space-between;}
-.app-logo{font-size:1.12rem;font-weight:900;letter-spacing:-0.02em;}
+.top-left{display:flex;align-items:center;gap:10px;}
+.app-logo{font-size:1.1rem;font-weight:900;letter-spacing:-0.02em;}
 .app-logo span{color:var(--gold);}
+.user-chip{background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;font-size:0.68rem;
+  color:var(--muted);font-weight:700;font-family:'JetBrains Mono',monospace;}
+.top-right{display:flex;align-items:center;gap:8px;}
 .total-pill{background:var(--surface2);border:1px solid var(--border);
-  border-radius:20px;padding:4px 11px;font-size:0.7rem;
+  border-radius:20px;padding:4px 10px;font-size:0.68rem;
   font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;}
+.logout-btn{background:rgba(224,92,92,0.12);border:1px solid rgba(224,92,92,0.25);
+  border-radius:20px;padding:5px 10px;font-size:0.68rem;font-weight:800;
+  color:var(--a2);cursor:pointer;font-family:'Nunito',sans-serif;}
 
 /* BOTTOM NAV */
 .bnav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);
@@ -41,7 +136,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   padding:4px 2px;position:relative;}
 .nb.active{color:var(--text);}
 .nb .ni{font-size:1.2rem;line-height:1;}
-.nb .ndot{position:absolute;top:6px;right:calc(50% - 12px);width:7px;height:7px;border-radius:50%;display:none;}
+.nb .ndot{position:absolute;top:6px;right:calc(50% - 12px);
+  width:7px;height:7px;border-radius:50%;display:none;}
 .nb.active .ndot{display:block;}
 .nb .nbadge{position:absolute;top:4px;right:calc(50% - 16px);background:var(--a2);
   color:#fff;border-radius:10px;padding:1px 4px;font-size:0.5rem;font-weight:900;
@@ -52,13 +148,17 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 
 /* DASHBOARD */
 .dh{padding:18px 14px 8px;}
-.dh h2{font-size:1.45rem;font-weight:900;line-height:1.2;}
+.dh h2{font-size:1.4rem;font-weight:900;line-height:1.2;}
 .dh h2 span{color:var(--gold);}
 .dh p{color:var(--muted);font-size:0.78rem;margin-top:3px;}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:10px 14px 14px;}
 .sbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;}
 .sbox .sl{font-size:0.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
 .sbox .sv{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;}
+.cloud-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(62,207,142,0.12);
+  border:1px solid rgba(62,207,142,0.25);border-radius:20px;
+  padding:5px 12px;font-size:0.72rem;font-weight:700;color:var(--a3);
+  margin:0 14px 14px;}
 .rcards{padding:0 14px 14px;display:flex;flex-direction:column;gap:9px;}
 .rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   padding:14px 12px;display:flex;align-items:center;gap:11px;cursor:pointer;
@@ -79,8 +179,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   border-bottom:1px solid var(--border);background:var(--surface);
   position:sticky;top:47px;z-index:40;}
 .back-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:1rem;flex-shrink:0;}
+  color:var(--text);width:32px;height:32px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;}
 .rtop-info{flex:1;min-width:0;}
 .rtop-info h3{font-size:0.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rtop-info p{font-size:0.63rem;color:var(--muted);}
@@ -95,20 +195,25 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .rsc .rsl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:2px;}
 .rsc .rsv{font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;}
 
-/* FILTER BAR */
-.fbar{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface);align-items:center;overflow-x:auto;}
+/* FILTER */
+.fbar{display:flex;gap:7px;padding:9px 14px;border-bottom:1px solid var(--border);
+  background:var(--surface);align-items:center;overflow-x:auto;}
 .fbar::-webkit-scrollbar{display:none;}
-.finput{flex:1;min-width:120px;padding:8px 10px;background:var(--surface2);
+.finput{flex:1;min-width:110px;padding:8px 10px;background:var(--surface2);
   border:1px solid var(--border);border-radius:8px;color:var(--text);
   font-family:'Nunito',sans-serif;font-size:0.82rem;outline:none;-webkit-appearance:none;}
 .finput:focus{border-color:var(--a1);}
-.fchip{padding:7px 11px;border:1px solid var(--border);border-radius:20px;
-  background:var(--surface2);color:var(--muted);font-family:'Nunito',sans-serif;
-  font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
-.fchip.active{border-color:currentColor;}
-.fclr{padding:7px 11px;border:1px solid var(--border);border-radius:20px;
+.fclr{padding:7px 10px;border:1px solid var(--border);border-radius:20px;
   background:transparent;color:var(--a2);font-family:'Nunito',sans-serif;
-  font-size:0.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* EXPORT */
+.export-row{padding:0 14px 9px;display:flex;gap:8px;}
+.exp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:9px;border:1px solid var(--border);border-radius:var(--rs);
+  background:var(--surface);color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:0.75rem;font-weight:800;cursor:pointer;transition:all 0.15s;}
+.exp-btn:active{transform:scale(0.97);}
 
 /* ENTRIES */
 .elist{padding:0 14px 12px;display:flex;flex-direction:column;gap:9px;}
@@ -116,8 +221,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   padding:13px;position:relative;transition:border-color 0.15s;}
 .ecard.sel{border-color:var(--a2);}
 .ecard-date{font-size:0.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;
-  margin-bottom:7px;display:flex;align-items:center;gap:5px;}
-.ecard-date::before{content:'📅';font-size:0.7rem;}
+  margin-bottom:7px;}
 .ectop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
 .ename{font-size:0.88rem;font-weight:800;flex:1;min-width:0;word-break:break-word;}
 .etotal{font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:700;flex-shrink:0;}
@@ -129,15 +233,13 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   font-size:0.72rem;font-weight:800;cursor:pointer;padding:3px 8px;display:none;}
 .ecard.sel .edel-btn{display:block;}
 .hint{text-align:center;color:var(--muted);font-size:0.65rem;padding:5px 14px;margin-bottom:3px;}
+.dgroup-hdr{padding:8px 14px 4px;font-size:0.68rem;font-weight:800;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
 
-/* EXPORT BTN */
-.export-row{padding:0 14px 10px;display:flex;gap:8px;}
-.exp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:10px;border:1px solid var(--border);border-radius:var(--rs);
-  background:var(--surface);color:var(--muted);font-family:'Nunito',sans-serif;
-  font-size:0.78rem;font-weight:800;cursor:pointer;transition:all 0.15s;}
-.exp-btn:hover{border-color:var(--a3);color:var(--a3);}
-.exp-btn:active{transform:scale(0.97);}
+/* SYNC indicator */
+.sync-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--a3);margin-right:4px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
 /* GRAND TOTAL */
 .gbar{margin:0 14px 14px;background:var(--surface);border:1px solid var(--border);
@@ -150,6 +252,14 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .empty .ei{font-size:2.8rem;opacity:0.25;margin-bottom:10px;}
 .empty p{color:var(--muted);font-size:0.82rem;line-height:1.6;}
 
+/* LOADING OVERLAY */
+#loading-overlay{display:none;position:fixed;inset:0;background:var(--bg);
+  z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+#loading-overlay.show{display:flex;}
+#loading-overlay .lmsg{color:var(--muted);font-size:0.85rem;font-weight:700;}
+.big-spinner{width:40px;height:40px;border:4px solid var(--border);
+  border-top-color:var(--a1);border-radius:50%;animation:spin 0.8s linear infinite;}
+
 /* MODAL */
 .ovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);
   backdrop-filter:blur(8px);z-index:200;align-items:flex-end;justify-content:center;}
@@ -159,12 +269,13 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   animation:mup 0.25s cubic-bezier(0.34,1.4,0.64,1);}
 @keyframes mup{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .mhandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:11px auto 0;}
-.mhead{padding:13px 17px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mhead{padding:13px 17px 11px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
 .mhead h3{font-size:0.98rem;font-weight:800;}
 .mhead p{font-size:0.66rem;color:var(--muted);margin-top:2px;}
 .mcls{background:var(--surface2);border:1px solid var(--border);color:var(--muted);
-  border-radius:8px;width:30px;height:30px;font-size:0.95rem;display:flex;
-  align-items:center;justify-content:center;cursor:pointer;}
+  border-radius:8px;width:30px;height:30px;font-size:0.95rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .mbody{padding:13px 17px;display:flex;flex-direction:column;gap:11px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .fg{display:flex;flex-direction:column;gap:5px;}
@@ -182,12 +293,14 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .crow.tot span{font-size:0.92rem!important;}
 .mfoot{padding:11px 17px 14px;display:flex;gap:9px;border-top:1px solid var(--border);}
 .bcnl{flex:1;padding:11px;border:1px solid var(--border);border-radius:var(--rs);
-  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:700;cursor:pointer;}
+  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;
+  font-size:0.86rem;font-weight:700;cursor:pointer;}
 .bsave{flex:2;padding:11px;border:none;border-radius:var(--rs);color:#fff;
-  font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:800;cursor:pointer;transition:transform 0.1s;}
+  font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:800;
+  cursor:pointer;transition:transform 0.1s;}
 .bsave:active{transform:scale(0.97);}
 
-/* DEL DIALOG */
+/* LOGOUT CONFIRM */
 .dovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);
   z-index:250;align-items:center;justify-content:center;padding:20px;}
 .dovlay.open{display:flex;}
@@ -196,7 +309,8 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .dbox h4{font-size:0.96rem;font-weight:800;margin-bottom:6px;}
 .dbox p{color:var(--muted);font-size:0.76rem;margin-bottom:17px;line-height:1.5;}
 .dbtns{display:flex;gap:9px;}
-.dbtns button{flex:1;padding:11px;border-radius:var(--rs);font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;cursor:pointer;border:none;}
+.dbtns button{flex:1;padding:11px;border-radius:var(--rs);
+  font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;cursor:pointer;border:none;}
 .dno{background:var(--surface2);color:var(--text);border:1px solid var(--border)!important;}
 .dyes{background:var(--a2);color:#fff;}
 
@@ -207,85 +321,154 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   font-size:0.8rem;font-weight:700;color:var(--text);z-index:300;white-space:nowrap;
   box-shadow:0 8px 24px rgba(0,0,0,0.5);opacity:0;transition:all 0.2s ease;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* DATE GROUP HEADER */
-.dgroup-hdr{padding:8px 14px 4px;font-size:0.68rem;font-weight:800;
-  color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
 </style>
 </head>
 <body>
 
-<div class="top-hdr">
-  <div class="app-logo">Office<span>Suite</span></div>
-  <div class="total-pill" id="gtotal">₹0.00</div>
+<!-- ══════════════════════════════
+     LOADING OVERLAY
+══════════════════════════════ -->
+<div id="loading-overlay" class="show">
+  <div class="big-spinner"></div>
+  <div class="lmsg" id="load-msg">Starting app...</div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="page active" id="page-dash">
-  <div class="dh">
-    <h2>My <span>Registers</span> 📂</h2>
-    <p>Tap any register to view or add entries</p>
-  </div>
-  <div class="sgrid">
-    <div class="sbox"><div class="sl">Registers</div><div class="sv">4</div></div>
-    <div class="sbox"><div class="sl">Total Entries</div><div class="sv" id="d-ent">0</div></div>
-    <div class="sbox" style="grid-column:span 2">
-      <div class="sl">Combined Grand Total</div>
-      <div class="sv" style="color:var(--gold)" id="d-gt">₹0.00</div>
+<!-- ══════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="licon">🏢</div>
+      <h1>Office<span>Suite</span></h1>
+      <p>Login with your mobile number</p>
+    </div>
+
+    <!-- STEP 1: Phone number -->
+    <div class="login-step active" id="step-phone">
+      <label class="login-label">Mobile Number</label>
+      <div class="phone-row">
+        <input class="country-code" value="+91" readonly/>
+        <input class="login-input" type="tel" id="phone-input"
+          placeholder="9876543210" maxlength="10"
+          inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')"/>
+      </div>
+      <div class="err-box" id="phone-err"></div>
+      <div class="spinner" id="phone-spinner"></div>
+      <div id="recaptcha-container"></div>
+      <button class="login-btn" id="send-otp-btn" onclick="sendOTP()">
+        📲 Send OTP
+      </button>
+      <div class="login-info">
+        OTP will be sent to your mobile number via SMS.<br/>
+        <span>Standard SMS charges may apply.</span>
+      </div>
+    </div>
+
+    <!-- STEP 2: OTP -->
+    <div class="login-step" id="step-otp">
+      <label class="login-label">Enter 6-Digit OTP</label>
+      <div class="otp-row" id="otp-boxes"></div>
+      <div class="err-box" id="otp-err"></div>
+      <div class="spinner" id="otp-spinner"></div>
+      <button class="login-btn green" id="verify-otp-btn" onclick="verifyOTP()">
+        ✅ Verify & Login
+      </button>
+      <button class="resend-link" id="resend-btn" onclick="resendOTP()">
+        Resend OTP (<span id="countdown">30</span>s)
+      </button>
+      <button class="back-link" onclick="backToPhone()">← Change Number</button>
+      <div class="login-info" style="margin-top:10px">
+        OTP sent to <span id="phone-display"></span>
+      </div>
     </div>
   </div>
-  <div class="rcards" id="rcards"></div>
 </div>
 
-<!-- REGISTER VIEW -->
-<div class="page" id="page-reg">
-  <div class="rtop">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div class="rtop-info">
-      <h3 id="rtitle">Register</h3>
-      <p id="rsub">Tap + to add</p>
+<!-- ══════════════════════════════
+     MAIN APP
+══════════════════════════════ -->
+<div id="app-screen">
+  <div class="top-hdr">
+    <div class="top-left">
+      <div class="app-logo">Office<span>Suite</span></div>
+      <div class="user-chip" id="user-chip">+91...</div>
     </div>
-    <button class="add-btn" id="radd" onclick="openModal()">＋ Add</button>
+    <div class="top-right">
+      <div class="total-pill" id="gtotal">₹0.00</div>
+      <button class="logout-btn" onclick="askLogout()">Logout</button>
+    </div>
   </div>
-  <div class="rstats" id="rstats"></div>
-  <!-- Filter bar -->
-  <div class="fbar" id="fbar">
-    <input class="finput" type="text" placeholder="🔍 Search..." id="sinput" oninput="onSearch(this.value)"/>
-    <input class="finput" type="date" id="fdate-from" onchange="applyFilter()" style="max-width:130px;" title="From date"/>
-    <input class="finput" type="date" id="fdate-to" onchange="applyFilter()" style="max-width:130px;" title="To date"/>
-    <button class="fclr" onclick="clearFilter()" id="clr-btn" style="display:none">✕ Clear</button>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dash">
+    <div class="dh">
+      <h2>My <span>Registers</span> 📂</h2>
+      <p>All data synced to cloud 🔒</p>
+    </div>
+    <div class="cloud-badge">
+      <span class="sync-dot"></span> Data stored securely on Firebase Cloud
+    </div>
+    <div class="sgrid">
+      <div class="sbox"><div class="sl">Registers</div><div class="sv">4</div></div>
+      <div class="sbox"><div class="sl">Total Entries</div><div class="sv" id="d-ent">0</div></div>
+      <div class="sbox" style="grid-column:span 2">
+        <div class="sl">Combined Grand Total</div>
+        <div class="sv" style="color:var(--gold)" id="d-gt">₹0.00</div>
+      </div>
+    </div>
+    <div class="rcards" id="rcards"></div>
   </div>
-  <div class="export-row">
-    <button class="exp-btn" onclick="exportCSV()">📥 Export CSV</button>
-    <button class="exp-btn" onclick="exportAll()">📊 Export All Data</button>
+
+  <!-- REGISTER VIEW -->
+  <div class="page" id="page-reg">
+    <div class="rtop">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="rtop-info">
+        <h3 id="rtitle">Register</h3>
+        <p id="rsub">Tap + to add</p>
+      </div>
+      <button class="add-btn" id="radd" onclick="openModal()">＋ Add</button>
+    </div>
+    <div class="rstats" id="rstats"></div>
+    <div class="fbar">
+      <input class="finput" type="text" placeholder="🔍 Search..." id="sinput" oninput="onSearch(this.value)"/>
+      <input class="finput" type="date" id="fdate-from" onchange="applyFilter()" style="max-width:128px;"/>
+      <input class="finput" type="date" id="fdate-to" onchange="applyFilter()" style="max-width:128px;"/>
+      <button class="fclr" onclick="clearFilter()" id="clr-btn" style="display:none">✕</button>
+    </div>
+    <div class="export-row">
+      <button class="exp-btn" onclick="exportCSV()">📥 CSV</button>
+      <button class="exp-btn" onclick="exportAll()">📊 All Data</button>
+    </div>
+    <div id="rcontent"></div>
   </div>
-  <div id="rcontent"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bnav">
+    <button class="nb active" id="nb-d" onclick="showDash()">
+      <span class="ni">🏠</span><span class="ndot" style="background:var(--gold)"></span>Home
+    </button>
+    <button class="nb" id="nb-0" onclick="openReg(0)">
+      <span class="ni">🧾</span><span class="ndot" style="background:var(--a1)"></span>
+      <span class="nbadge" id="b0"></span>Imprest
+    </button>
+    <button class="nb" id="nb-1" onclick="openReg(1)">
+      <span class="ni">📋</span><span class="ndot" style="background:var(--a2)"></span>
+      <span class="nbadge" id="b1"></span>Dead Stock
+    </button>
+    <button class="nb" id="nb-2" onclick="openReg(2)">
+      <span class="ni">🗂️</span><span class="ndot" style="background:var(--a3)"></span>
+      <span class="nbadge" id="b2"></span>Consumable
+    </button>
+    <button class="nb" id="nb-3" onclick="openReg(3)">
+      <span class="ni">💼</span><span class="ndot" style="background:var(--a4)"></span>
+      <span class="nbadge" id="b3"></span>Salary
+    </button>
+  </nav>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav class="bnav">
-  <button class="nb active" id="nb-d" onclick="showDash()">
-    <span class="ni">🏠</span><span class="ndot" style="background:var(--gold)"></span>Home
-  </button>
-  <button class="nb" id="nb-0" onclick="openReg(0)">
-    <span class="ni">🧾</span><span class="ndot" style="background:var(--a1)"></span>
-    <span class="nbadge" id="b0"></span>Imprest
-  </button>
-  <button class="nb" id="nb-1" onclick="openReg(1)">
-    <span class="ni">📋</span><span class="ndot" style="background:var(--a2)"></span>
-    <span class="nbadge" id="b1"></span>Dead Stock
-  </button>
-  <button class="nb" id="nb-2" onclick="openReg(2)">
-    <span class="ni">🗂️</span><span class="ndot" style="background:var(--a3)"></span>
-    <span class="nbadge" id="b2"></span>Consumable
-  </button>
-  <button class="nb" id="nb-3" onclick="openReg(3)">
-    <span class="ni">💼</span><span class="ndot" style="background:var(--a4)"></span>
-    <span class="nbadge" id="b3"></span>Salary
-  </button>
-</nav>
-
-<!-- MODAL -->
+<!-- ENTRY MODAL -->
 <div class="ovlay" id="ovlay">
   <div class="modal">
     <div class="mhandle"></div>
@@ -301,28 +484,54 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- DELETE -->
+<!-- DELETE / LOGOUT CONFIRM -->
 <div class="dovlay" id="dovlay">
   <div class="dbox">
-    <h4>Delete Entry?</h4>
-    <p>This entry will be permanently removed.</p>
+    <h4 id="dbox-title">Confirm</h4>
+    <p id="dbox-msg">Are you sure?</p>
     <div class="dbtns">
       <button class="dno" onclick="closeDel()">Cancel</button>
-      <button class="dyes" onclick="confirmDel()">Delete</button>
+      <button class="dyes" id="dyes-btn" onclick="confirmAction()">Confirm</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ── DATA ──
-const SK=['imprest','deadstock','consumable','salary'];
-const ld=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]');}catch{return[];}};
-const sv=(k,d)=>localStorage.setItem(k,JSON.stringify(d));
-const DB=[ld('imprest'),ld('deadstock'),ld('consumable'),ld('salary')];
+<!-- ══════════════════════════════
+     FIREBASE + APP LOGIC
+══════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, collection, addDoc, getDocs, deleteDoc, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ── CONFIGS ──
+// ── FIREBASE INIT ──
+const firebaseConfig = {
+  apiKey: "AIzaSyB--PP8WzNvjGF2nBeAuVu_Ij_Ufr3VJ_I",
+  authDomain: "office-register-dda75.firebaseapp.com",
+  projectId: "office-register-dda75",
+  storageBucket: "office-register-dda75.firebasestorage.app",
+  messagingSenderId: "224201239007",
+  appId: "1:224201239007:web:c5658fab5e67359f97fc6a"
+};
+const app    = initializeApp(firebaseConfig);
+const auth   = getAuth(app);
+const db     = getFirestore(app);
+
+// ── STATE ──
+let currentUser = null;
+let confirmResult = null;
+let DB = [[],[],[],[]];
+let curReg=-1, srch='', fFrom='', fTo='';
+let pendingAction = null;
+let aRI = -1;
+
+const SK = ['imprest','deadstock','consumable','salary'];
+
+// ── REGISTER CONFIGS ──
 const R=[
   {
     name:'Imprest Bill',emoji:'🧾',color:'var(--a1)',bg:'rgba(108,143,255,0.15)',
@@ -336,8 +545,7 @@ const R=[
       {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
     calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
-    card:(r,t)=>`
-      <div class="ecard-date">${fd(r.date)}</div>
+    card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a1)">${F(t.tot)}</div></div>
       <div class="emeta">
         <div class="mc">Memo: <span>${r.memoNo||'—'}</span></div>
@@ -345,12 +553,14 @@ const R=[
         <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
         <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
       </div>`,
-    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a1)',1]];},
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;
+      return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],
+             ['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a1)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
     sl:['Entries','Total Price','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
-    csvHeaders:['Date','Item Name','Cash Memo No','Item Price','SGST %','SGST Amt','CGST %','CGST Amt','Total'],
-    csvRow:r=>{const t=R[0].calc(r);return[fd(r.date),r.itemName,r.memoNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
+    csvH:['Date','Item Name','Cash Memo No','Item Price','SGST%','SGST Amt','CGST%','CGST Amt','Total'],
+    csvR:r=>{const t=R[0].calc(r);return[fd(r.date),r.itemName,r.memoNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
     name:'Dead Stock Register',emoji:'📋',color:'var(--a2)',bg:'rgba(224,92,92,0.15)',
@@ -364,8 +574,7 @@ const R=[
       {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
     calc:r=>{const p=+r.price||0,s=p*(+r.sgst||0)/100,c=p*(+r.cgst||0)/100;return{sa:s,ca:c,tot:p+s+c};},
-    card:(r,t)=>`
-      <div class="ecard-date">${fd(r.date)}</div>
+    card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.itemName||'—'}</div><div class="etotal" style="color:var(--a2)">${F(t.tot)}</div></div>
       <div class="emeta">
         <div class="mc">Receipt: <span>${r.receiptNo||'—'}</span></div>
@@ -373,12 +582,14 @@ const R=[
         <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
         <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
       </div>`,
-    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a2)',1]];},
+    prev:v=>{const p=+v.price||0,s=p*(+v.sgst||0)/100,c=p*(+v.cgst||0)/100;
+      return[['Price',F(p),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],
+             ['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Total',F(p+s+c),'var(--a2)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return s+p+sg+cg;},0),
     sl:['Entries','Total Price','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const p=+r.price||0,sg=p*(+r.sgst||0)/100,cg=p*(+r.cgst||0)/100;return{p:s.p+p,x:s.x+sg+cg,g:s.g+p+sg+cg};},{p:0,x:0,g:0});return[rows.length,F(t.p),F(t.x),F(t.g)];},
-    csvHeaders:['Date','Item Name','Receipt No','Item Price','SGST %','SGST Amt','CGST %','CGST Amt','Total'],
-    csvRow:r=>{const t=R[1].calc(r);return[fd(r.date),r.itemName,r.receiptNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
+    csvH:['Date','Item Name','Receipt No','Item Price','SGST%','SGST Amt','CGST%','CGST Amt','Total'],
+    csvR:r=>{const t=R[1].calc(r);return[fd(r.date),r.itemName,r.receiptNo,r.price,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
     name:'Consumable Register',emoji:'🗂️',color:'var(--a3)',bg:'rgba(62,207,142,0.15)',
@@ -392,8 +603,7 @@ const R=[
       {k:'cgst',lb:'CGST %',t:'number',ph:'9'},
     ],
     calc:r=>{const b=(+r.qty||0)*(+r.rate||0),s=b*(+r.sgst||0)/100,c=b*(+r.cgst||0)/100;return{b,sa:s,ca:c,tot:b+s+c};},
-    card:(r,t)=>`
-      <div class="ecard-date">${fd(r.date)}</div>
+    card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">${r.particular||'—'}</div><div class="etotal" style="color:var(--a3)">${F(t.tot)}</div></div>
       <div class="emeta">
         <div class="mc">Qty: <span>${r.qty||0}</span></div>
@@ -401,12 +611,14 @@ const R=[
         <div class="mc">SGST ${r.sgst||0}%: <span>${F(t.sa)}</span></div>
         <div class="mc">CGST ${r.cgst||0}%: <span>${F(t.ca)}</span></div>
       </div>`,
-    prev:v=>{const b=(+v.qty||0)*(+v.rate||0),s=b*(+v.sgst||0)/100,c=b*(+v.cgst||0)/100;return[['Qty×Rate',F(b),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Grand Total',F(b+s+c),'var(--a3)',1]];},
+    prev:v=>{const b=(+v.qty||0)*(+v.rate||0),s=b*(+v.sgst||0)/100,c=b*(+v.cgst||0)/100;
+      return[['Qty×Rate',F(b),''],['SGST '+(v.sgst||0)+'%','+ '+F(s),''],
+             ['CGST '+(v.cgst||0)+'%','+ '+F(c),''],['Grand Total',F(b+s+c),'var(--a3)',1]];},
     tot:rows=>rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return s+b+sg+cg;},0),
     sl:['Entries','Base Amount','Total Tax','Grand Total'],
     st:rows=>{const t=rows.reduce((s,r)=>{const b=(+r.qty||0)*(+r.rate||0),sg=b*(+r.sgst||0)/100,cg=b*(+r.cgst||0)/100;return{b:s.b+b,x:s.x+sg+cg,g:s.g+b+sg+cg};},{b:0,x:0,g:0});return[rows.length,F(t.b),F(t.x),F(t.g)];},
-    csvHeaders:['Date','Particular','Qty','Rate','SGST %','SGST Amt','CGST %','CGST Amt','Grand Total'],
-    csvRow:r=>{const t=R[2].calc(r);return[fd(r.date),r.particular,r.qty,r.rate,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
+    csvH:['Date','Particular','Qty','Rate','SGST%','SGST Amt','CGST%','CGST Amt','Grand Total'],
+    csvR:r=>{const t=R[2].calc(r);return[fd(r.date),r.particular,r.qty,r.rate,r.sgst,t.sa.toFixed(2),r.cgst,t.ca.toFixed(2),t.tot.toFixed(2)];}
   },
   {
     name:'Salary Register',emoji:'💼',color:'var(--a4)',bg:'rgba(240,169,76,0.15)',
@@ -418,9 +630,8 @@ const R=[
       {k:'stateTax',lb:'State Tax (₹)',t:'number',ph:'259',ro:true,dv:259},
       {k:'inHand',lb:'In Hand (₹)',t:'number',ph:'0.00'},
     ],
-    calc:r=>{return{net:(+r.gross||0)-(+r.tds||0)-259};},
-    card:(r,t)=>`
-      <div class="ecard-date">${fd(r.date)}</div>
+    calc:r=>({net:(+r.gross||0)-(+r.tds||0)-259}),
+    card:(r,t)=>`<div class="ecard-date">📅 ${fd(r.date)}</div>
       <div class="ectop"><div class="ename">Salary — ${fd(r.date)}</div><div class="etotal" style="color:var(--a4)">${F(t.net)}</div></div>
       <div class="emeta">
         <div class="mc">Gross: <span>${F(r.gross)}</span></div>
@@ -428,12 +639,14 @@ const R=[
         <div class="mc">State Tax: <span style="color:var(--gold)">₹259</span></div>
         <div class="mc">In Hand: <span>${F(r.inHand)}</span></div>
       </div>`,
-    prev:v=>{const g=+v.gross||0,tds=+v.tds||0,net=g-tds-259;return[['Gross Salary',F(g),''],['TDS','− '+F(tds),'var(--a2)'],['State Tax','− ₹259','var(--gold)'],['Net Payable',F(net),'var(--a4)',1]];},
+    prev:v=>{const g=+v.gross||0,tds=+v.tds||0,net=g-tds-259;
+      return[['Gross Salary',F(g),''],['TDS','− '+F(tds),'var(--a2)'],
+             ['State Tax','− ₹259','var(--gold)'],['Net Payable',F(net),'var(--a4)',1]];},
     tot:rows=>rows.reduce((s,r)=>s+(+r.gross||0)-(+r.tds||0)-259,0),
     sl:['Months','Total Gross','Deductions','Net Payable'],
     st:rows=>{const t=rows.reduce((s,r)=>({g:s.g+(+r.gross||0),d:s.d+(+r.tds||0)+259,n:s.n+(+r.gross||0)-(+r.tds||0)-259}),{g:0,d:0,n:0});return[rows.length,F(t.g),F(t.d),F(t.n)];},
-    csvHeaders:['Date','Gross Salary','TDS Deduction','State Tax','In Hand','Net Payable'],
-    csvRow:r=>{const t=R[3].calc(r);return[fd(r.date),r.gross,r.tds,259,r.inHand,t.net.toFixed(2)];}
+    csvH:['Date','Gross Salary','TDS Deduction','State Tax','In Hand','Net Payable'],
+    csvR:r=>{const t=R[3].calc(r);return[fd(r.date),r.gross,r.tds,259,r.inHand,t.net.toFixed(2)];}
   }
 ];
 
@@ -441,46 +654,254 @@ const R=[
 const F=v=>'₹'+(+v||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fd=d=>{if(!d)return'—';try{const[y,m,dy]=d.split('-');return`${dy}-${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]}-${y}`;}catch{return d;}};
 const fmtMonth=d=>{if(!d)return'';try{const[y,m]=d.split('-');return`${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;}catch{return d;}};
+function showLoading(msg){document.getElementById('load-msg').textContent=msg;document.getElementById('loading-overlay').classList.add('show');}
+function hideLoading(){document.getElementById('loading-overlay').classList.remove('show');}
 
+// ── AUTH STATE LISTENER ──
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    currentUser=user;
+    showLoading('Loading your data...');
+    await loadAllData();
+    showApp(user);
+    hideLoading();
+  } else {
+    currentUser=null;
+    showLogin();
+    hideLoading();
+  }
+});
+
+function showLogin(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+}
+function showApp(user){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='block';
+  const ph=user.phoneNumber||'';
+  document.getElementById('user-chip').textContent=ph;
+  updBadges();
+  renderDash();
+}
+
+// ── FIRESTORE: Load all data ──
+async function loadAllData(){
+  DB=[[],[],[],[]];
+  for(let i=0;i<SK.length;i++){
+    try{
+      const col=collection(db,'users',currentUser.uid,SK[i]);
+      const q=query(col,orderBy('createdAt','desc'));
+      const snap=await getDocs(q);
+      DB[i]=snap.docs.map(d=>({...d.data(),_id:d.id}));
+    }catch(e){console.log('Load error',e);}
+  }
+}
+
+// ── FIRESTORE: Save entry ──
+async function saveToFirestore(regIdx,entry){
+  const col=collection(db,'users',currentUser.uid,SK[regIdx]);
+  const docRef=await addDoc(col,{...entry,createdAt:new Date().toISOString()});
+  return docRef.id;
+}
+
+// ── FIRESTORE: Delete entry ──
+async function deleteFromFirestore(regIdx,docId){
+  const ref=doc(db,'users',currentUser.uid,SK[regIdx],docId);
+  await deleteDoc(ref);
+}
+
+// ── OTP: Build OTP boxes ──
+function buildOTPBoxes(){
+  const row=document.getElementById('otp-boxes');
+  row.innerHTML='';
+  for(let i=0;i<6;i++){
+    const inp=document.createElement('input');
+    inp.className='otp-box'; inp.type='tel'; inp.maxLength=1;
+    inp.inputMode='numeric'; inp.id='otp-'+i;
+    inp.addEventListener('input',e=>{
+      e.target.value=e.target.value.replace(/\D/g,'');
+      if(e.target.value&&i<5) document.getElementById('otp-'+(i+1)).focus();
+    });
+    inp.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!e.target.value&&i>0) document.getElementById('otp-'+(i-1)).focus();
+    });
+    row.appendChild(inp);
+  }
+}
+
+// ── OTP: Setup reCAPTCHA ──
+function setupRecaptcha(){
+  if(window.recaptchaVerifier) return;
+  window.recaptchaVerifier=new RecaptchaVerifier(auth,'recaptcha-container',{
+    size:'normal',
+    callback:()=>{document.getElementById('send-otp-btn').disabled=false;},
+    'expired-callback':()=>{
+      window.recaptchaVerifier=null;
+      setupRecaptcha();
+    }
+  });
+  window.recaptchaVerifier.render();
+  document.getElementById('send-otp-btn').disabled=true;
+}
+
+// Wait for DOM then setup
+setTimeout(()=>{
+  setupRecaptcha();
+  buildOTPBoxes();
+},500);
+
+// ── SEND OTP ──
+window.sendOTP=async function(){
+  const ph=document.getElementById('phone-input').value.trim();
+  const err=document.getElementById('phone-err');
+  err.style.display='none';
+  if(ph.length!==10){err.textContent='Please enter valid 10-digit mobile number';err.style.display='block';return;}
+  const fullPhone='+91'+ph;
+  document.getElementById('phone-spinner').classList.add('loading');
+  document.getElementById('send-otp-btn').disabled=true;
+  try{
+    confirmResult=await signInWithPhoneNumber(auth,fullPhone,window.recaptchaVerifier);
+    document.getElementById('phone-display').textContent=fullPhone;
+    document.getElementById('step-phone').classList.remove('active');
+    document.getElementById('step-otp').classList.add('active');
+    startCountdown();
+    document.getElementById('otp-0').focus();
+  }catch(e){
+    err.textContent='Failed to send OTP: '+e.message;
+    err.style.display='block';
+    document.getElementById('send-otp-btn').disabled=false;
+    window.recaptchaVerifier=null;
+    setupRecaptcha();
+  }
+  document.getElementById('phone-spinner').classList.remove('loading');
+};
+
+// ── VERIFY OTP ──
+window.verifyOTP=async function(){
+  let otp='';
+  for(let i=0;i<6;i++) otp+=document.getElementById('otp-'+i).value;
+  const err=document.getElementById('otp-err');
+  err.style.display='none';
+  if(otp.length!==6){err.textContent='Please enter all 6 digits of OTP';err.style.display='block';return;}
+  document.getElementById('otp-spinner').classList.add('loading');
+  document.getElementById('verify-otp-btn').disabled=true;
+  try{
+    await confirmResult.confirm(otp);
+    // onAuthStateChanged will handle the rest
+  }catch(e){
+    err.textContent='Wrong OTP. Please try again.';
+    err.style.display='block';
+    document.getElementById('verify-otp-btn').disabled=false;
+  }
+  document.getElementById('otp-spinner').classList.remove('loading');
+};
+
+// ── RESEND OTP ──
+let cdTimer=null;
+function startCountdown(){
+  let sec=30;
+  const btn=document.getElementById('resend-btn');
+  const cd=document.getElementById('countdown');
+  btn.classList.remove('active'); btn.disabled=true;
+  cd.textContent=sec;
+  cdTimer=setInterval(()=>{
+    sec--;cd.textContent=sec;
+    if(sec<=0){clearInterval(cdTimer);btn.textContent='Resend OTP';btn.classList.add('active');btn.disabled=false;}
+  },1000);
+}
+window.resendOTP=async function(){
+  if(!document.getElementById('resend-btn').classList.contains('active'))return;
+  window.recaptchaVerifier=null;
+  document.getElementById('step-otp').classList.remove('active');
+  document.getElementById('step-phone').classList.add('active');
+  setupRecaptcha();
+};
+window.backToPhone=function(){
+  clearInterval(cdTimer);
+  document.getElementById('step-otp').classList.remove('active');
+  document.getElementById('step-phone').classList.add('active');
+  document.getElementById('otp-err').style.display='none';
+};
+
+// ── LOGOUT ──
+window.askLogout=function(){
+  pendingAction='logout';
+  document.getElementById('dbox-title').textContent='Logout?';
+  document.getElementById('dbox-msg').textContent='Your data is safely stored on cloud. You can login again anytime with the same number.';
+  document.getElementById('dyes-btn').style.background='var(--a2)';
+  document.getElementById('dyes-btn').textContent='Logout';
+  document.getElementById('dovlay').classList.add('open');
+};
+window.confirmAction=async function(){
+  closeDel();
+  if(pendingAction==='logout'){
+    showLoading('Logging out...');
+    await signOut(auth);
+    DB=[[],[],[],[]];
+    hideLoading();
+    toast('👋 Logged out successfully');
+  } else if(pendingAction==='delete'){
+    const{ri,ei,id}=pendingData;
+    try{
+      if(id) await deleteFromFirestore(ri,id);
+      DB[ri].splice(ei,1);
+      updBadges();renderReg(ri);
+      toast('🗑️ Entry deleted');
+    }catch(e){toast('❌ Delete failed');}
+  }
+  pendingAction=null;
+};
+window.closeDel=function(){document.getElementById('dovlay').classList.remove('open');};
+
+// ── BADGES & TOTALS ──
 function updBadges(){
-  DB.forEach((d,i)=>{const b=document.getElementById('b'+i);if(d.length){b.textContent=d.length;b.style.display='block';}else b.style.display='none';});
-  document.getElementById('gtotal').textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
+  DB.forEach((d,i)=>{
+    const b=document.getElementById('b'+i);
+    if(b){if(d.length){b.textContent=d.length;b.style.display='block';}else b.style.display='none';}
+  });
+  const t=DB.reduce((s,d,i)=>s+R[i].tot(d),0);
+  const el=document.getElementById('gtotal');
+  if(el) el.textContent=F(t);
 }
 
 // ── NAV ──
-let curReg=-1,srch='',fFrom='',fTo='';
-function setNav(id){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function showPg(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+n).classList.add('active');}
-function showDash(){setNav('nb-d');showPg('dash');renderDash();}
-function goBack(){curReg=-1;srch='';fFrom='';fTo='';showDash();}
-function openReg(i){
+function setNav(id){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');}
+function showPg(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const el=document.getElementById('page-'+n);if(el)el.classList.add('active');}
+window.showDash=function(){setNav('nb-d');showPg('dash');renderDash();};
+window.goBack=function(){curReg=-1;srch='';fFrom='';fTo='';showDash();};
+window.openReg=function(i){
   curReg=i;srch='';fFrom='';fTo='';
-  document.getElementById('sinput').value='';
-  document.getElementById('fdate-from').value='';
-  document.getElementById('fdate-to').value='';
-  document.getElementById('clr-btn').style.display='none';
+  const si=document.getElementById('sinput'),ff=document.getElementById('fdate-from'),ft=document.getElementById('fdate-to');
+  if(si)si.value='';if(ff)ff.value='';if(ft)ft.value='';
+  const cb=document.getElementById('clr-btn');if(cb)cb.style.display='none';
   setNav('nb-'+i);showPg('reg');renderReg(i);
-}
-function onSearch(v){srch=v;renderReg(curReg);}
-function applyFilter(){
+};
+window.onSearch=function(v){srch=v;renderReg(curReg);};
+window.applyFilter=function(){
   fFrom=document.getElementById('fdate-from').value;
   fTo=document.getElementById('fdate-to').value;
-  document.getElementById('clr-btn').style.display=(fFrom||fTo)?'block':'none';
+  const cb=document.getElementById('clr-btn');
+  if(cb)cb.style.display=(fFrom||fTo)?'block':'none';
   renderReg(curReg);
-}
-function clearFilter(){
+};
+window.clearFilter=function(){
   fFrom='';fTo='';
-  document.getElementById('fdate-from').value='';
-  document.getElementById('fdate-to').value='';
-  document.getElementById('clr-btn').style.display='none';
+  const ff=document.getElementById('fdate-from'),ft=document.getElementById('fdate-to');
+  if(ff)ff.value='';if(ft)ft.value='';
+  const cb=document.getElementById('clr-btn');if(cb)cb.style.display='none';
   renderReg(curReg);
-}
+};
 
 // ── DASHBOARD ──
 function renderDash(){
-  document.getElementById('d-ent').textContent=DB.reduce((s,d)=>s+d.length,0);
-  document.getElementById('d-gt').textContent=F(DB.reduce((s,d,i)=>s+R[i].tot(d),0));
-  document.getElementById('rcards').innerHTML=R.map((r,i)=>`
+  const te=DB.reduce((s,d)=>s+d.length,0);
+  const gt=DB.reduce((s,d,i)=>s+R[i].tot(d),0);
+  const el1=document.getElementById('d-ent'),el2=document.getElementById('d-gt');
+  if(el1)el1.textContent=te;
+  if(el2)el2.textContent=F(gt);
+  const rc=document.getElementById('rcards');
+  if(rc) rc.innerHTML=R.map((r,i)=>`
     <div class="rcard" onclick="openReg(${i})">
       <div class="rcard-bar" style="background:${r.color}"></div>
       <div class="rcard-icon" style="background:${r.bg}">${r.emoji}</div>
@@ -490,100 +911,96 @@ function renderDash(){
     </div>`).join('');
 }
 
-// ── REGISTER ──
+// ── REGISTER VIEW ──
 function renderReg(i){
-  const reg=R[i],rows=DB[i],stats=reg.st(rows);
-  document.getElementById('rtitle').textContent=reg.name;
-  document.getElementById('rsub').textContent=rows.length+' entries · '+((fFrom||fTo)?'Filtered':'All dates');
-  document.getElementById('radd').style.background=reg.color;
-  document.getElementById('rstats').innerHTML=stats.map((v,j)=>`
+  const reg=R[i],rows=DB[i];
+  const stats=reg.st(rows);
+  const rtEl=document.getElementById('rtitle'),rsEl=document.getElementById('rsub'),raEl=document.getElementById('radd');
+  if(rtEl)rtEl.textContent=reg.name;
+  if(rsEl)rsEl.textContent=rows.length+' entries';
+  if(raEl)raEl.style.background=reg.color;
+  const rsEl2=document.getElementById('rstats');
+  if(rsEl2) rsEl2.innerHTML=stats.map((v,j)=>`
     <div class="rsc"><div class="rsl">${reg.sl[j]}</div>
     <div class="rsv" style="${j===3?'color:'+reg.color:''}">${v}</div></div>`).join('');
 
-  // filter
   let filtered=rows.filter(r=>{
-    const sv=Object.values(r).some(v=>String(v).toLowerCase().includes(srch.toLowerCase()));
-    if(!sv)return false;
+    if(srch&&!Object.values(r).some(v=>String(v).toLowerCase().includes(srch.toLowerCase())))return false;
     if(fFrom&&r.date&&r.date<fFrom)return false;
     if(fTo&&r.date&&r.date>fTo)return false;
     return true;
   });
-
-  // sort by date desc
-  filtered=[...filtered].sort((a,b)=>{
-    if(!a.date&&!b.date)return 0;
-    if(!a.date)return 1; if(!b.date)return -1;
-    return b.date.localeCompare(a.date);
-  });
+  filtered=[...filtered].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
   const cont=document.getElementById('rcontent');
+  if(!cont)return;
   if(!filtered.length){
     cont.innerHTML=`<div class="empty"><div class="ei">${reg.emoji}</div>
       <p>${(srch||fFrom||fTo)?'No entries match your filter.':'No entries yet.<br/>Tap <b>＋ Add</b> to add your first entry!'}</p></div>`;
     return;
   }
 
-  // group by month
   const groups={};
   filtered.forEach(r=>{
-    const key=r.date?r.date.substring(0,7):'unknown';
+    const key=r.date?r.date.substring(0,7):'nodate';
     if(!groups[key])groups[key]=[];
     groups[key].push(r);
   });
 
-  const filteredTotal=reg.tot(filtered);
-
-  let html=`<div class="hint">💡 Long press entry to delete · Sorted latest first</div>`;
+  let html=`<div class="hint">💡 Long press entry to delete</div>`;
   Object.keys(groups).sort((a,b)=>b.localeCompare(a)).forEach(month=>{
-    const label=month==='unknown'?'No Date':fmtMonth(month+'-01');
-    const mTotal=reg.tot(groups[month]);
-    html+=`<div class="dgroup-hdr">📅 ${label} &nbsp;·&nbsp; ${groups[month].length} entries &nbsp;·&nbsp; <span style="color:${reg.color};font-family:'JetBrains Mono',monospace">${F(mTotal)}</span></div>`;
+    const label=month==='nodate'?'No Date':fmtMonth(month+'-01');
+    const mTot=reg.tot(groups[month]);
+    html+=`<div class="dgroup-hdr">📅 ${label} · ${groups[month].length} entries · <span style="color:${reg.color};font-family:'JetBrains Mono',monospace">${F(mTot)}</span></div>`;
     html+=`<div class="elist">`;
     groups[month].forEach(r=>{
       const ri=rows.indexOf(r),t=reg.calc(r);
       html+=`<div class="ecard" id="ec${ri}" ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
         ${reg.card(r,t)}
-        <button class="edel-btn" onclick="askDel(${i},${ri})">🗑 Delete</button>
+        <button class="edel-btn" onclick="askDel(${i},${ri},'${r._id||''}')">🗑 Delete</button>
       </div>`;
     });
     html+=`</div>`;
   });
-
+  const gt2=reg.tot(filtered);
   html+=`<div class="gbar"><div class="glabel">${(fFrom||fTo)?'Filtered Total':'Grand Total'}</div>
-    <div class="gval" style="color:${reg.color}">${F(filteredTotal)}</div></div>`;
+    <div class="gval" style="color:${reg.color}">${F(gt2)}</div></div>`;
   cont.innerHTML=html;
 }
 
 // ── LONG PRESS ──
 let lpT=null;
-function lps(ri,ei){lpT=setTimeout(()=>{const c=document.getElementById('ec'+ei);if(c)c.classList.add('sel');},550);}
-function lpe(){clearTimeout(lpT);}
+window.lps=function(ri,ei){lpT=setTimeout(()=>{const c=document.getElementById('ec'+ei);if(c)c.classList.add('sel');},550);};
+window.lpe=function(){clearTimeout(lpT);};
 
 // ── DELETE ──
-let dRI=-1,dEI=-1;
-function askDel(ri,ei){dRI=ri;dEI=ei;document.getElementById('dovlay').classList.add('open');}
-function closeDel(){document.getElementById('dovlay').classList.remove('open');}
-function confirmDel(){DB[dRI].splice(dEI,1);sv(SK[dRI],DB[dRI]);updBadges();closeDel();renderReg(dRI);toast('🗑️ Deleted');}
+let pendingData={};
+window.askDel=function(ri,ei,id){
+  pendingAction='delete';
+  pendingData={ri,ei,id};
+  document.getElementById('dbox-title').textContent='Delete Entry?';
+  document.getElementById('dbox-msg').textContent='This entry will be permanently removed from Firebase cloud.';
+  document.getElementById('dyes-btn').style.background='var(--a2)';
+  document.getElementById('dyes-btn').textContent='Delete';
+  document.getElementById('dovlay').classList.add('open');
+};
 
 // ── MODAL ──
-let aRI=-1;
-function openModal(){
+window.openModal=function(){
   aRI=curReg;const reg=R[aRI];
   document.getElementById('mtitle').textContent='Add — '+reg.name;
   document.getElementById('msub').textContent=reg.desc;
   document.getElementById('bsave').style.background=reg.color;
   buildFields(aRI);
   document.getElementById('ovlay').classList.add('open');
-}
-function closeModal(){document.getElementById('ovlay').classList.remove('open');}
+};
+window.closeModal=function(){document.getElementById('ovlay').classList.remove('open');};
 document.getElementById('ovlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
 function buildFields(i){
   const reg=R[i],flds=reg.fields;let html='';
-  // Date always full width first
   const dateFld=flds.find(f=>f.isDate);
-  if(dateFld) html+=fh(dateFld);
-  // Rest in pairs
+  if(dateFld)html+=fh(dateFld);
   const rest=flds.filter(f=>!f.isDate);
   for(let j=0;j<rest.length;j+=2){
     const f1=rest[j],f2=rest[j+1];
@@ -606,68 +1023,68 @@ function fh(f){
   </div>`;
 }
 function getV(i){const v={};R[i].fields.forEach(f=>{const e=document.getElementById('mf-'+f.k);v[f.k]=e?e.value:'';});return v;}
-function refreshPrev(i){document.getElementById('cprev').innerHTML=buildPrev(i,getV(i));}
+function refreshPrev(i){const el=document.getElementById('cprev');if(el)el.innerHTML=buildPrev(i,getV(i));}
 function buildPrev(i,v){return R[i].prev(v).map(([l,val,c,tot])=>`<div class="crow${tot?' tot':''}"><span>${l}</span><span style="${c?'color:'+c:''}">${val}</span></div>`).join('');}
 
 // ── SAVE ──
-function saveEntry(){
+window.saveEntry=async function(){
   const i=aRI,reg=R[i],v=getV(i);
   const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
   if(miss.length){toast('⚠️ Fill: '+miss.map(f=>f.lb).join(', '));return;}
   if(i===3)v.stateTax=259;
-  DB[i].push(v);sv(SK[i],DB[i]);
-  updBadges();closeModal();renderReg(i);toast('✅ Saved on '+fd(v.date));
-}
+  document.getElementById('bsave').textContent='Saving...';
+  document.getElementById('bsave').disabled=true;
+  try{
+    const id=await saveToFirestore(i,v);
+    v._id=id;
+    DB[i].unshift(v);
+    updBadges();closeModal();renderReg(i);
+    toast('✅ Saved on '+fd(v.date));
+  }catch(e){
+    toast('❌ Save failed. Check internet.');
+    console.error(e);
+  }
+  document.getElementById('bsave').textContent='💾 Save Entry';
+  document.getElementById('bsave').disabled=false;
+};
 
-// ── EXPORT CSV ──
-function exportCSV(){
+// ── EXPORT ──
+window.exportCSV=function(){
   const i=curReg,reg=R[i],rows=DB[i];
-  if(!rows.length){toast('⚠️ No data to export');return;}
-  let csv=[reg.csvHeaders.join(',')];
-  // apply current filter
-  const filtered=rows.filter(r=>{
+  if(!rows.length){toast('⚠️ No data');return;}
+  let csv=[reg.csvH.join(',')];
+  let filtered=rows.filter(r=>{
     if(fFrom&&r.date&&r.date<fFrom)return false;
     if(fTo&&r.date&&r.date>fTo)return false;
     return true;
   }).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  filtered.forEach(r=>csv.push(reg.csvRow(r).map(v=>`"${v}"`).join(',')));
+  filtered.forEach(r=>csv.push(reg.csvR(r).map(v=>`"${v}"`).join(',')));
   const blob=new Blob([csv.join('\n')],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download=reg.name.replace(/ /g,'_')+'_'+(fFrom||'all')+'.csv';
-  a.click();URL.revokeObjectURL(url);
-  toast('📥 CSV exported!');
-}
-
-// ── EXPORT ALL ──
-function exportAll(){
-  let all='OFFICE REGISTER — COMPLETE DATA EXPORT\n';
-  all+='Generated: '+new Date().toLocaleString('en-IN')+'\n\n';
+  a.href=url;a.download=reg.name.replace(/ /g,'_')+'.csv';a.click();
+  URL.revokeObjectURL(url);toast('📥 CSV exported!');
+};
+window.exportAll=function(){
+  let all='OFFICE REGISTER — COMPLETE DATA\nGenerated: '+new Date().toLocaleString('en-IN')+'\n\n';
   R.forEach((reg,i)=>{
-    const rows=DB[i];
-    all+=`${'='.repeat(50)}\n${reg.emoji} ${reg.name.toUpperCase()}\n${'='.repeat(50)}\n`;
-    if(!rows.length){all+='No entries\n\n';return;}
-    all+=reg.csvHeaders.join(' | ')+'\n';
-    all+='-'.repeat(80)+'\n';
-    [...rows].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(r=>{
-      all+=reg.csvRow(r).join(' | ')+'\n';
-    });
-    all+=`\nGrand Total: ${F(reg.tot(rows))}\n\n`;
+    all+='='.repeat(50)+'\n'+reg.emoji+' '+reg.name.toUpperCase()+'\n'+'='.repeat(50)+'\n';
+    if(!DB[i].length){all+='No entries\n\n';return;}
+    all+=reg.csvH.join(' | ')+'\n'+'-'.repeat(80)+'\n';
+    [...DB[i]].sort((a,b)=>(a.date||'').localeCompare(b.date||'')).forEach(r=>{all+=reg.csvR(r).join(' | ')+'\n';});
+    all+='\nGrand Total: '+F(reg.tot(DB[i]))+'\n\n';
   });
   const blob=new Blob([all],{type:'text/plain'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt';
-  a.click();URL.revokeObjectURL(url);
-  toast('📊 All data exported!');
-}
+  a.href=url;a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt';a.click();
+  URL.revokeObjectURL(url);toast('📊 All data exported!');
+};
 
 // ── TOAST ──
 let tT;
-function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2500);}
+window.toast=function(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),2500);};
 
-// ── INIT ──
-updBadges();renderDash();
 </script>
 </body>
 </html>
