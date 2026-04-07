@@ -617,12 +617,16 @@ function startListeners(){
   },8000);
 }
 
-// ── SAVE TO FIRESTORE ──
+// ── SAVE TO FIRESTORE (with 8s timeout) ──
 async function saveToFS(i, entry){
-  const ref=await addDoc(
+  const savePromise = addDoc(
     collection(db,'shared',SHARED_ID,SK[i]),
     {...entry, createdAt:new Date().toISOString()}
   );
+  const timeoutPromise = new Promise((_,reject)=>
+    setTimeout(()=>reject(new Error('timeout')), 8000)
+  );
+  const ref = await Promise.race([savePromise, timeoutPromise]);
   return ref.id;
 }
 
@@ -845,18 +849,40 @@ window.saveEntry=async function(){
   const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
   if(miss.length){toast('⚠️ Please fill: '+miss.map(f=>f.lb).join(', '));return;}
   if(i===3)v.stateTax=259;
-  const btn=document.getElementById('bsave');
-  btn.textContent='Saving...';btn.disabled=true;
+
+  // ── OPTIMISTIC SAVE: close modal instantly, show saved ──
+  const tempId='temp_'+Date.now();
+  const tempEntry={...v, _id:tempId, _pending:true};
+  DB[i].unshift(tempEntry);
+  updBadges();
+  if(curReg===i) renderReg(i);
+  closeModal();
+  toast('💾 Saving...');
+
+  // ── BACKGROUND SYNC TO FIREBASE ──
   try{
-    await saveToFS(i,v);
-    // onSnapshot auto-updates UI for everyone
-    closeModal();
-    toast('✅ Saved! Visible to all users now.');
+    const id=await saveToFS(i,v);
+    // Replace temp entry with real one
+    const idx=DB[i].findIndex(r=>r._id===tempId);
+    if(idx!==-1){ DB[i][idx]={...v,_id:id}; }
+    updBadges();
+    if(curReg===i) renderReg(i);
+    setSyncStatus('ok','Saved & synced ✓');
+    toast('✅ Saved on '+fd(v.date));
   }catch(e){
     console.error('Save error:',e);
-    toast('❌ Save failed: '+e.message);
+    // Remove temp entry on failure
+    const idx=DB[i].findIndex(r=>r._id===tempId);
+    if(idx!==-1) DB[i].splice(idx,1);
+    updBadges();
+    if(curReg===i) renderReg(i);
+    setSyncStatus('error','Save failed — check internet');
+    if(e.message==='timeout'){
+      toast('⚠️ Slow internet — please try again');
+    } else {
+      toast('❌ Save failed: '+e.message);
+    }
   }
-  btn.textContent='💾 Save Entry';btn.disabled=false;
 };
 
 // ── EXPORT ──
