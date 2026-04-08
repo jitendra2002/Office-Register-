@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<title>Office Register</title>
+<title>CIAE Office Register</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   border-top-color:var(--a1);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .load-msg{color:var(--muted);font-size:0.85rem;font-weight:700;text-align:center;padding:0 30px;}
-.load-logo{font-size:1.5rem;font-weight:900;}
+.load-logo{font-size:1.2rem;font-weight:900;text-align:center;}
 .load-logo span{color:var(--gold);}
 
 /* APP */
@@ -38,7 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 .top-hdr{position:sticky;top:0;z-index:50;background:var(--surface);
   border-bottom:1px solid var(--border);padding:10px 14px;
   display:flex;align-items:center;justify-content:space-between;}
-.app-logo{font-size:1.1rem;font-weight:900;}
+.app-logo{font-size:0.88rem;font-weight:900;}
 .app-logo span{color:var(--gold);}
 .top-right{display:flex;align-items:center;gap:7px;}
 .total-pill{background:var(--surface2);border:1px solid var(--border);
@@ -303,14 +303,14 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
 <!-- LOADING -->
 <div id="loading-overlay">
   <div class="big-spinner"></div>
-  <div class="load-logo">Office<span>Suite</span></div>
+  <div class="load-logo">CIAE <span>Office Register</span></div>
   <div class="load-msg" id="load-msg">Loading registers...</div>
 </div>
 
 <!-- APP -->
 <div id="app-screen">
   <div class="top-hdr">
-    <div class="app-logo">Office<span>Suite</span></div>
+    <div class="app-logo">CIAE <span>Office Register</span></div>
     <div class="top-right">
       <div class="total-pill" id="gtotal">₹0.00</div>
       <button class="share-btn" onclick="openShare()">🔗 Share</button>
@@ -442,7 +442,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
     </div>
     <div class="receipt-body" id="receipt-body"></div>
     <div class="receipt-stamp">
-      <div class="rs-text">OfficeSuite · Powered by Firebase Cloud</div>
+      <div class="rs-text">CIAE Office Register · Powered by Firebase Cloud</div>
     </div>
     <div class="receipt-actions">
       <button class="ra-btn ra-close" onclick="closeReceipt()">✕ Close</button>
