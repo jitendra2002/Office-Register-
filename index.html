@@ -248,7 +248,47 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;
   cursor:pointer;text-decoration:underline;}
 
-/* TOAST */
+/* RECEIPT VIEW */
+.receipt-ovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);z-index:300;align-items:flex-end;justify-content:center;}
+.receipt-ovlay.open{display:flex;}
+.receipt-modal{background:var(--surface);border:1px solid var(--border);
+  border-radius:20px 20px 0 0;width:100%;max-width:500px;
+  max-height:90vh;overflow-y:auto;
+  animation:mup 0.28s cubic-bezier(0.34,1.4,0.64,1);}
+.receipt-handle{width:36px;height:4px;background:var(--border);
+  border-radius:2px;margin:12px auto 0;}
+.receipt-header{padding:18px 20px 14px;text-align:center;
+  border-bottom:1px solid var(--border);}
+.receipt-header .rh-icon{font-size:2.2rem;margin-bottom:6px;}
+.receipt-header h3{font-size:1.1rem;font-weight:900;margin-bottom:2px;}
+.receipt-header .rh-date{font-size:0.75rem;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;}
+.receipt-header .rh-id{font-size:0.62rem;color:var(--border);
+  font-family:'JetBrains Mono',monospace;margin-top:4px;}
+.receipt-body{padding:16px 20px;}
+.receipt-divider{border:none;border-top:1px dashed var(--border);margin:12px 0;}
+.receipt-row{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;font-size:0.86rem;}
+.receipt-row .rl{color:var(--muted);font-weight:600;}
+.receipt-row .rv{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.84rem;}
+.receipt-row.total-row{border-top:2px solid var(--border);margin-top:8px;
+  padding-top:12px;font-size:1rem;}
+.receipt-row.total-row .rl{font-weight:800;color:var(--text);}
+.receipt-row.total-row .rv{font-size:1.05rem;}
+.receipt-stamp{text-align:center;padding:14px 20px;
+  border-top:1px dashed var(--border);margin-top:4px;}
+.receipt-stamp .rs-text{font-size:0.68rem;color:var(--muted);margin-bottom:8px;}
+.receipt-actions{display:flex;gap:9px;padding:0 20px 20px;}
+.ra-btn{flex:1;padding:12px;border-radius:var(--rs);
+  font-family:'Nunito',sans-serif;font-size:0.86rem;font-weight:800;
+  cursor:pointer;border:none;transition:transform 0.1s;}
+.ra-btn:active{transform:scale(0.96);}
+.ra-edit{background:var(--a1);color:#fff;}
+.ra-del{background:rgba(224,92,92,0.15);color:var(--a2);
+  border:1px solid rgba(224,92,92,0.3)!important;}
+.ra-close{background:var(--surface2);color:var(--muted);
+  border:1px solid var(--border)!important;}
 .toast{position:fixed;bottom:calc(var(--nav)+12px);left:50%;
   transform:translateX(-50%) translateY(16px);background:var(--surface2);
   border:1px solid var(--border);border-radius:20px;padding:8px 18px;
@@ -390,13 +430,35 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
+<!-- RECEIPT VIEW MODAL -->
+<div class="receipt-ovlay" id="receipt-ovlay">
+  <div class="receipt-modal">
+    <div class="receipt-handle"></div>
+    <div class="receipt-header">
+      <div class="rh-icon" id="rh-icon">🧾</div>
+      <h3 id="rh-title">Entry Receipt</h3>
+      <div class="rh-date" id="rh-date"></div>
+      <div class="rh-id" id="rh-id"></div>
+    </div>
+    <div class="receipt-body" id="receipt-body"></div>
+    <div class="receipt-stamp">
+      <div class="rs-text">OfficeSuite · Powered by Firebase Cloud</div>
+    </div>
+    <div class="receipt-actions">
+      <button class="ra-btn ra-close" onclick="closeReceipt()">✕ Close</button>
+      <button class="ra-btn ra-edit" onclick="editFromReceipt()">✏️ Edit</button>
+      <button class="ra-btn ra-del" onclick="delFromReceipt()">🗑 Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc,
-         doc, onSnapshot, query, orderBy }
+         doc, onSnapshot, query, orderBy, updateDoc }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ── FIREBASE CONFIG ──
@@ -740,9 +802,11 @@ function renderReg(i){
         <div class="elist">`;
       groups[mo].forEach(r=>{
         const ri=rows.indexOf(r),t=reg.calc(r);
-        html+=`<div class="ecard" id="ec${ri}" ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
+        html+=`<div class="ecard" id="ec${ri}"
+          onclick="openReceipt(${i},${ri})"
+          ontouchstart="lps(${i},${ri})" ontouchend="lpe()" ontouchmove="lpe()">
           ${reg.card(r,t)}
-          <button class="edel-btn" onclick="askDel(${i},${ri},'${r._id||''}')">🗑 Delete</button>
+          <button class="edel-btn" onclick="event.stopPropagation();askDel(${i},${ri},'${r._id||''}')">🗑 Delete</button>
         </div>`;
       });
       html+=`</div>`;
@@ -843,48 +907,6 @@ const bldPrev=(i,v)=>R[i].prev(v).map(([l,val,c,tot])=>`
     <span>${l}</span><span style="${c?'color:'+c:''}">${val}</span>
   </div>`).join('');
 
-// ── SAVE ──
-window.saveEntry=async function(){
-  const i=aRI,reg=R[i],v=getV(i);
-  const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
-  if(miss.length){toast('⚠️ Please fill: '+miss.map(f=>f.lb).join(', '));return;}
-  if(i===3)v.stateTax=259;
-
-  // ── OPTIMISTIC SAVE: close modal instantly, show saved ──
-  const tempId='temp_'+Date.now();
-  const tempEntry={...v, _id:tempId, _pending:true};
-  DB[i].unshift(tempEntry);
-  updBadges();
-  if(curReg===i) renderReg(i);
-  closeModal();
-  toast('💾 Saving...');
-
-  // ── BACKGROUND SYNC TO FIREBASE ──
-  try{
-    const id=await saveToFS(i,v);
-    // Replace temp entry with real one
-    const idx=DB[i].findIndex(r=>r._id===tempId);
-    if(idx!==-1){ DB[i][idx]={...v,_id:id}; }
-    updBadges();
-    if(curReg===i) renderReg(i);
-    setSyncStatus('ok','Saved & synced ✓');
-    toast('✅ Saved on '+fd(v.date));
-  }catch(e){
-    console.error('Save error:',e);
-    // Remove temp entry on failure
-    const idx=DB[i].findIndex(r=>r._id===tempId);
-    if(idx!==-1) DB[i].splice(idx,1);
-    updBadges();
-    if(curReg===i) renderReg(i);
-    setSyncStatus('error','Save failed — check internet');
-    if(e.message==='timeout'){
-      toast('⚠️ Slow internet — please try again');
-    } else {
-      toast('❌ Save failed: '+e.message);
-    }
-  }
-};
-
 // ── EXPORT ──
 window.exportCSV=function(){
   const i=curReg,reg=R[i];
@@ -910,6 +932,207 @@ window.exportAll=function(){
   a.href=URL.createObjectURL(new Blob([all],{type:'text/plain'}));
   a.download='All_Registers_'+new Date().toISOString().split('T')[0]+'.txt';a.click();
   toast('📊 All data exported!');
+};
+
+// ── UPDATE IN FIRESTORE ──
+async function updateInFS(i, id, entry){
+  const updatePromise = updateDoc(
+    doc(db,'shared',SHARED_ID,SK[i],id),
+    {...entry, updatedAt:new Date().toISOString()}
+  );
+  const timeoutPromise = new Promise((_,reject)=>
+    setTimeout(()=>reject(new Error('timeout')),8000)
+  );
+  await Promise.race([updatePromise, timeoutPromise]);
+}
+
+// ── RECEIPT VIEW ──
+let receiptReg=-1, receiptRow=-1;
+
+window.openReceipt=function(ri, rowIdx){
+  // block if long-press triggered
+  if(document.getElementById('ec'+rowIdx)?.classList.contains('sel')) return;
+  receiptReg=ri; receiptRow=rowIdx;
+  const reg=R[ri], r=DB[ri][rowIdx];
+  if(!r) return;
+  const t=reg.calc(r);
+
+  document.getElementById('rh-icon').textContent=reg.emoji;
+  document.getElementById('rh-title').textContent=reg.name;
+  document.getElementById('rh-date').textContent='Date: '+fd(r.date);
+  document.getElementById('rh-id').textContent='ID: '+(r._id||'—').slice(-10);
+
+  // Build receipt rows based on register type
+  let rows='';
+  const row=(label,value,color='')=>`
+    <div class="receipt-row">
+      <span class="rl">${label}</span>
+      <span class="rv" style="${color?'color:'+color:''}">${value}</span>
+    </div>`;
+
+  if(ri===0){ // Imprest
+    rows+=row('Item Name', r.itemName||'—');
+    rows+=row('Cash Memo No.', r.memoNo||'—');
+    rows+='<hr class="receipt-divider"/>';
+    rows+=row('Item Price', F(r.price));
+    rows+=row('SGST ('+( r.sgst||0)+'%)', '+ '+F(t.sa), 'var(--a3)');
+    rows+=row('CGST ('+(r.cgst||0)+'%)', '+ '+F(t.ca), 'var(--a3)');
+    rows+=`<div class="receipt-row total-row">
+      <span class="rl">Total Amount</span>
+      <span class="rv" style="color:var(--a1)">${F(t.tot)}</span>
+    </div>`;
+  } else if(ri===1){ // Dead Stock
+    rows+=row('Item Name', r.itemName||'—');
+    rows+=row('Receipt No.', r.receiptNo||'—');
+    rows+='<hr class="receipt-divider"/>';
+    rows+=row('Item Price', F(r.price));
+    rows+=row('SGST ('+(r.sgst||0)+'%)', '+ '+F(t.sa), 'var(--a3)');
+    rows+=row('CGST ('+(r.cgst||0)+'%)', '+ '+F(t.ca), 'var(--a3)');
+    rows+=`<div class="receipt-row total-row">
+      <span class="rl">Total Amount</span>
+      <span class="rv" style="color:var(--a2)">${F(t.tot)}</span>
+    </div>`;
+  } else if(ri===2){ // Consumable
+    rows+=row('Particular', r.particular||'—');
+    rows+=row('Quantity', r.qty||0);
+    rows+=row('Rate per Unit', F(r.rate));
+    rows+='<hr class="receipt-divider"/>';
+    rows+=row('Base Amount (Qty×Rate)', F((+r.qty||0)*(+r.rate||0)));
+    rows+=row('SGST ('+(r.sgst||0)+'%)', '+ '+F(t.sa), 'var(--a3)');
+    rows+=row('CGST ('+(r.cgst||0)+'%)', '+ '+F(t.ca), 'var(--a3)');
+    rows+=`<div class="receipt-row total-row">
+      <span class="rl">Grand Total</span>
+      <span class="rv" style="color:var(--a3)">${F(t.tot)}</span>
+    </div>`;
+  } else if(ri===3){ // Salary
+    rows+=row('Gross Salary', F(r.gross));
+    rows+='<hr class="receipt-divider"/>';
+    rows+=row('TDS Deduction', '− '+F(r.tds), 'var(--a2)');
+    rows+=row('State Tax (Fixed)', '− ₹259.00', 'var(--gold)');
+    rows+='<hr class="receipt-divider"/>';
+    rows+=row('In Hand Received', F(r.inHand));
+    rows+=`<div class="receipt-row total-row">
+      <span class="rl">Net Payable</span>
+      <span class="rv" style="color:var(--a4)">${F(t.net)}</span>
+    </div>`;
+  }
+
+  document.getElementById('receipt-body').innerHTML=rows;
+  document.getElementById('receipt-ovlay').classList.add('open');
+};
+
+window.closeReceipt=()=>{
+  document.getElementById('receipt-ovlay').classList.remove('open');
+};
+// Close on backdrop tap
+document.getElementById('receipt-ovlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('receipt-ovlay')) closeReceipt();
+});
+
+window.delFromReceipt=function(){
+  closeReceipt();
+  const r=DB[receiptReg][receiptRow];
+  if(r) askDel(receiptReg, receiptRow, r._id||'');
+};
+
+// ── EDIT ENTRY ──
+let editMode=false, editRegIdx=-1, editRowIdx=-1, editDocId='';
+
+window.editFromReceipt=function(){
+  closeReceipt();
+  editMode=true;
+  editRegIdx=receiptReg;
+  editRowIdx=receiptRow;
+  const r=DB[receiptReg][receiptRow];
+  if(!r){toast('❌ Entry not found');return;}
+  editDocId=r._id||'';
+
+  aRI=receiptReg;
+  const reg=R[aRI];
+  document.getElementById('mtitle').textContent='✏️ Edit — '+reg.name;
+  document.getElementById('msub').textContent='Update the entry details below';
+  document.getElementById('bsave').style.background='var(--a1)';
+  document.getElementById('bsave').textContent='✏️ Update Entry';
+  buildFields(aRI);
+
+  // Pre-fill all fields with existing data
+  reg.fields.forEach(f=>{
+    const el=document.getElementById('mf-'+f.k);
+    if(el && r[f.k]!==undefined) el.value=r[f.k];
+  });
+  // Refresh calc preview
+  const cp=document.getElementById('cprev');
+  if(cp) cp.innerHTML=bldPrev(aRI,getV(aRI));
+
+  document.getElementById('ovlay').classList.add('open');
+};
+
+// ── SAVE (handles both Add and Edit) ──
+window.saveEntry=async function(){
+  const i=aRI,reg=R[i],v=getV(i);
+  const miss=reg.fields.filter(f=>!f.ro&&!f.isDate&&(!v[f.k]||v[f.k]===''));
+  if(miss.length){toast('⚠️ Please fill: '+miss.map(f=>f.lb).join(', '));return;}
+  if(i===3) v.stateTax=259;
+
+  if(editMode){
+    // ── EDIT MODE ──
+    const idx=editRowIdx;
+    const oldEntry={...DB[i][idx]};
+    DB[i][idx]={...DB[i][idx],...v};
+    updBadges();
+    if(curReg===i) renderReg(i);
+    closeModal();
+    toast('✏️ Updating...');
+    try{
+      await updateInFS(i, editDocId, v);
+      setSyncStatus('ok','Updated & synced ✓');
+      toast('✅ Entry updated!');
+    }catch(e){
+      // Revert on failure
+      DB[i][idx]=oldEntry;
+      updBadges();
+      if(curReg===i) renderReg(i);
+      setSyncStatus('error','Update failed');
+      toast('❌ Update failed: '+e.message);
+    }
+    editMode=false; editDocId=''; editRegIdx=-1; editRowIdx=-1;
+  } else {
+    // ── ADD MODE ──
+    const tempId='temp_'+Date.now();
+    const tempEntry={...v,_id:tempId,_pending:true};
+    DB[i].unshift(tempEntry);
+    updBadges();
+    if(curReg===i) renderReg(i);
+    closeModal();
+    toast('💾 Saving...');
+    try{
+      const id=await saveToFS(i,v);
+      const idx=DB[i].findIndex(r=>r._id===tempId);
+      if(idx!==-1) DB[i][idx]={...v,_id:id};
+      updBadges();
+      if(curReg===i) renderReg(i);
+      setSyncStatus('ok','Saved & synced ✓');
+      toast('✅ Saved on '+fd(v.date));
+    }catch(e){
+      const idx=DB[i].findIndex(r=>r._id===tempId);
+      if(idx!==-1) DB[i].splice(idx,1);
+      updBadges();
+      if(curReg===i) renderReg(i);
+      setSyncStatus('error','Save failed — check internet');
+      toast(e.message==='timeout'?'⚠️ Slow internet — try again':'❌ Save failed: '+e.message);
+    }
+  }
+};
+
+// Reset edit mode when modal closed
+const origCloseModal=window.closeModal;
+window.closeModal=function(){
+  document.getElementById('ovlay').classList.remove('open');
+  if(editMode){
+    editMode=false; editDocId=''; editRegIdx=-1; editRowIdx=-1;
+    const btn=document.getElementById('bsave');
+    if(btn){btn.textContent='💾 Save Entry';}
+  }
 };
 
 // ── START ──
